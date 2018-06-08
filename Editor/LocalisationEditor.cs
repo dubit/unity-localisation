@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using DUCK.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,6 +14,7 @@ namespace DUCK.Localisation.Editor
 		/// </summary>
 		public const int KEY_CRC_ENCODING_VERSION = 1;
 
+		// Code generation
 		private const string REPLACE_SUFFIX = ".old";
 		private const string CONFIG_FILENAME = "LocalisationConfig.cs";
 		private const string LOC_CLASS_NAME = "Loc";
@@ -60,7 +60,7 @@ namespace DUCK.Localisation.Editor
 			if (localSchema == null)
 			{
 				EditorGUILayout.HelpBox(
-					"A key schema is a list of all the localisation keys in the project - generate a new one and populate it with all the keys you need, or drag the existing asset into the field above.",
+					"A key schema is a list of all the localisation keys in the project - generate a new one with the Assets menu and populate it with all the keys you need, or drag the existing asset into the field above.",
 					MessageType.Info);
 
 				var schema =
@@ -73,7 +73,10 @@ namespace DUCK.Localisation.Editor
 
 				if (GUILayout.Button("Create new empty key schema"))
 				{
-					ScriptableObjectUtility.CreateAsset<LocalisationKeySchema>();
+					var asset = CreateInstance<LocalisationKeySchema>();
+					var path = "LocalisationKeySchema.asset";
+					ProjectWindowUtil.CreateAsset(asset, path);
+
 					Debug.Log("Created new KeySchema.asset in Resources/");
 				}
 			}
@@ -168,7 +171,7 @@ namespace DUCK.Localisation.Editor
 				if (locTable != null)
 				{
 					metaData[i].missingValues = LocalisationTableEditor.FindEmptyValues(locTable, CurrentSchema, true);
-					metaData[i].keyEncodingVersion = locTable.crcEncodingVersion;
+					metaData[i].keyEncodingVersion = locTable.CRCEncodingVersion;
 
 					Resources.UnloadAsset(locTable);
 				}
@@ -340,7 +343,9 @@ namespace DUCK.Localisation.Editor
 				AssetDatabase.CreateFolder("Assets/Resources", LOC_DATA_PATH);
 			}
 
-			ScriptableObjectUtility.CreateAsset<LocalisationTable>("Assets/Resources/" + LOC_DATA_PATH + "/New Localisation Table.asset");
+			var asset = CreateInstance<LocalisationTable>();
+			var path = "Assets/Resources/" + LOC_DATA_PATH + "/New Localisation Table.asset";
+			ProjectWindowUtil.CreateAsset(asset, path);
 		}
 
 		public static int GetCRC(string category, string key)

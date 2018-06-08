@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace DUCK.Localisation
+﻿namespace DUCK.Localisation
 {
 	public interface ILocalisedObject
 	{

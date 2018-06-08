@@ -1,21 +1,23 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace DUCK.Localisation
+namespace DUCK.Localisation.LocalisedObjects
 {
+	/// <summary>
+	/// Automatically updates a Text component's text to the current locale
+	/// </summary>
 	[RequireComponent(typeof(Text))]
 	public class LocalisedText : LocalisedObject
 	{
-		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Text; } }
-
 		private Text text;
+
+		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Text; } }
 
 		protected override void Awake()
 		{
-			base.Awake();
 			text = GetComponent<Text>();
 
-			OnLocaleChanged();
+			base.Awake();
 		}
 
 		protected override void OnLocaleChanged()
@@ -23,6 +25,7 @@ namespace DUCK.Localisation
 			if (text == null) return;
 
 			string newText;
+
 			text.text = Localiser.GetLocalisedString(localisationKey, out newText)
 				? newText
 				: string.Format("<color=red>{0}</color>", localisationKey);

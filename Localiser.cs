@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using DUCK.Utils;
 using UnityEngine;
 
 namespace DUCK.Localisation
@@ -13,6 +12,9 @@ namespace DUCK.Localisation
 	/// </summary>
 	public static class Localiser
 	{
+		/// <summary>
+		/// List of CultureInfos representing the languages supported by the localiser
+		/// </summary>
 		public static readonly CultureInfo[] SupportedLocales =
 		{
 			new CultureInfo("en-GB"),
@@ -24,10 +26,17 @@ namespace DUCK.Localisation
 			new CultureInfo("pt-BR")
 		};
 
+		/// <summary>
+		/// The current locale, i.e. the language the application is currently localised to
+		/// </summary>
 		public static CultureInfo CurrentLocale { get; private set; }
+
+		/// <summary>
+		/// True if the localiser has initialised successfully and loaded a localisation table
+		/// </summary>
 		public static bool Initialised { get { return currentLocalisationTable != null; } }
 
-		private static readonly Dictionary<string, string> tablePathsByLocale = new Dictionary<string, string>();
+		private static readonly Dictionary<string, string> validTablePaths = new Dictionary<string, string>();
 		private static readonly Dictionary<string, string> allTablePaths = new Dictionary<string, string>();
 
 		private static string defaultCulture = "en-US";
@@ -44,7 +53,7 @@ namespace DUCK.Localisation
 		{
 			CurrentLocale = TryGetCultureInfo(cultureName);
 
-			tablePathsByLocale.Clear();
+			validTablePaths.Clear();
 			allTablePaths.Clear();
 
 			var localisationTables = Resources.LoadAll<LocalisationTable>(path);
@@ -70,14 +79,14 @@ namespace DUCK.Localisation
 
 				foreach (var localeName in locTable.SupportedLocales)
 				{
-					if (tablePathsByLocale.ContainsKey(localeName))
+					if (validTablePaths.ContainsKey(localeName))
 					{
 						Debug.LogWarning(string.Format("Localisation table contains locale '{0}' which has already been added!",
 							localeName));
 					}
 					else
 					{
-						tablePathsByLocale.Add(localeName, fullPath);
+						validTablePaths.Add(localeName, fullPath);
 
 						if (localeName == CurrentLocale.Name && Application.isPlaying)
 						{
@@ -94,12 +103,15 @@ namespace DUCK.Localisation
 			if (currentLocalisationTable == null && Application.isPlaying)
 			{
 				Debug.LogError(string.Format("Error: unsupported locale: {0}, switching to {1}", CurrentLocale.Name, defaultCulture));
-				SwitchLanguage(defaultCulture);
+				SwitchCulture(defaultCulture);
 			}
 
 			return Initialised;
 		}
 
+		/// <summary>
+		/// Sets up the default culture, i.e. the language the application will fall back to if it can't load the one requested
+		/// </summary>
 		public static void SetDefaultCulture(string defaultCultureName)
 		{
 			if (TryGetCultureInfo(defaultCultureName).Name == defaultCultureName)
@@ -112,7 +124,10 @@ namespace DUCK.Localisation
 			}
 		}
 
-		public static void SwitchLanguage(string cultureName)
+		/// <summary>
+		/// Switches the application to the specified culture
+		/// </summary>
+		public static void SwitchCulture(string cultureName)
 		{
 			var loadedTable = LoadLocalisationTable(cultureName);
 			if (loadedTable == null)
@@ -124,9 +139,18 @@ namespace DUCK.Localisation
 			CurrentLocale = new CultureInfo(cultureName);
 			currentLocalisationTable = loadedTable;
 
-			OnLocaleChanged.SafeInvoke();
+			if (OnLocaleChanged != null)
+			{
+				OnLocaleChanged.Invoke();
+			}
 		}
 
+		/// <summary>
+		/// Returns the localised string content associated with the specified key, in the currently selected culture
+		/// </summary>
+		/// <param name="key">The CRC key requested</param>
+		/// <param name="target">The string reference into which the localised text will be copied</param>
+		/// <returns>bool - whether retrieving the localised string was successful or not</returns>
 		public static bool GetLocalisedString(int key, out string target)
 		{
 			if (!Initialised)
@@ -147,13 +171,16 @@ namespace DUCK.Localisation
 			return true;
 		}
 
+		/// <summary>
+		/// Dictionary of all localisation tables (name --> path) found in the Resources target folder (whether valid or not)
+		/// </summary>
 		public static Dictionary<string, string> GetTablePaths()
 		{
 			return allTablePaths;
 		}
 
 		/// <returns>Returns the correct CultureInfo if name is valid, otherwise returns CultureInfo(defaultCulture)</returns>
-		private static CultureInfo TryGetCultureInfo(string cultureName)
+		private static CultureInfo TryGetCultureInfo(string cultureName = "")
 		{
 			if (string.IsNullOrEmpty(cultureName))
 			{
@@ -177,9 +204,9 @@ namespace DUCK.Localisation
 
 		private static LocalisationTable LoadLocalisationTable(string localeName)
 		{
-			if (!tablePathsByLocale.ContainsKey(localeName)) return null;
+			if (!validTablePaths.ContainsKey(localeName)) return null;
 
-			var loadPath = tablePathsByLocale[localeName];
+			var loadPath = validTablePaths[localeName];
 			return Resources.Load<LocalisationTable>(loadPath);
 		}
 	}
