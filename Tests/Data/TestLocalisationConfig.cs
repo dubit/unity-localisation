@@ -49,9 +49,4 @@ namespace DUCK.Localisation.Tests
 			return true;
 		}
 	}
-
-	public class Config
-	{
-		public const string LOCALISATION_DATA_PATH = "Localisation";
-	}
 }

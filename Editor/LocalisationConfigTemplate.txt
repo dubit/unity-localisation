@@ -43,9 +43,4 @@ namespace Assets.Scripts.Localisation
 			return true;
 		}
 	}
-
-	public class Config
-	{
-		public const string LOCALISATION_DATA_PATH = "{PATH}";
-	}
 }

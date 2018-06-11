@@ -18,7 +18,7 @@ namespace DUCK.Localisation.Editor
 		private const string REPLACE_SUFFIX = ".old";
 		private const string CONFIG_FILENAME = "LocalisationConfig.cs";
 		private const string LOC_CLASS_NAME = "Loc";
-		private const string LOC_DATA_PATH = "Localisation";
+		private const string LOC_FOLDER_NAME = "Localisation";
 
 		public static LocalisationKeySchema CurrentSchema { get; private set; }
 
@@ -110,7 +110,7 @@ namespace DUCK.Localisation.Editor
 				"Click Generate to build a class file which can be referenced application-side to get localisation keys and other data in-game.",
 				MessageType.Info);
 			EditorGUILayout.LabelField("Output filename:", CONFIG_FILENAME);
-			EditorGUILayout.LabelField("Localisation data path:", "Resources/" + LOC_DATA_PATH + "/");
+			EditorGUILayout.LabelField("Localisation data path:", "Resources/" + LOC_FOLDER_NAME + "/");
 
 			EditorGUILayout.LabelField("Template required to generate locale class");
 			EditorGUILayout.BeginHorizontal();
@@ -149,14 +149,14 @@ namespace DUCK.Localisation.Editor
 			}
 			else
 			{
-				EditorGUILayout.HelpBox(string.Format("Click 'find' to search for localisation table assets in {0}", LOC_DATA_PATH),
+				EditorGUILayout.HelpBox(string.Format("Click 'find' to search for localisation table assets in {0}", LOC_FOLDER_NAME),
 					MessageType.Info);
 			}
 		}
 
 		private void FindAllTables()
 		{
-			Localiser.Initialise(LOC_DATA_PATH);
+			Localiser.Initialise(LOC_FOLDER_NAME);
 			tablePaths = Localiser.GetTablePaths();
 
 			if (metaData.Length < tablePaths.Keys.Count)
@@ -322,7 +322,6 @@ namespace DUCK.Localisation.Editor
 			var outputText = configTemplate.text;
 			outputText = outputText.Replace("{CLASS}", LOC_CLASS_NAME);
 			outputText = outputText.Replace("{KEYS}", stringBuilder.ToString());
-			outputText = outputText.Replace("{PATH}", LOC_DATA_PATH);
 			File.WriteAllText(filePath, outputText);
 
 			AssetDatabase.SaveAssets();
@@ -338,13 +337,13 @@ namespace DUCK.Localisation.Editor
 				AssetDatabase.CreateFolder("Assets", "Resources");
 			}
 
-			if (!AssetDatabase.IsValidFolder("Assets/Resources/" + LOC_DATA_PATH))
+			if (!AssetDatabase.IsValidFolder("Assets/Resources/" + LOC_FOLDER_NAME))
 			{
-				AssetDatabase.CreateFolder("Assets/Resources", LOC_DATA_PATH);
+				AssetDatabase.CreateFolder("Assets/Resources", LOC_FOLDER_NAME);
 			}
 
 			var asset = CreateInstance<LocalisationTable>();
-			var path = "Assets/Resources/" + LOC_DATA_PATH + "/New Localisation Table.asset";
+			var path = "Assets/Resources/" + LOC_FOLDER_NAME + "/New Localisation Table.asset";
 			ProjectWindowUtil.CreateAsset(asset, path);
 		}
 

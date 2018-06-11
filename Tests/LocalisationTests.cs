@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,12 +12,14 @@ namespace DUCK.Localisation.Tests
 		private const string TEST_TABLE_PATH1 = TEST_DATA_PATH + "/TestLocTable1";
 		private const string TEST_TABLE_PATH2 = TEST_DATA_PATH + "/TestLocTable2";
 
-		private const string RESOURCES_TEST_FOLDER = "DUCK.Localisation-TestData";
-		private const string RESOURCES_TEST_PATH = "Resources/" + RESOURCES_TEST_FOLDER;
+		private const string RESOURCES_PATH = "Resources/";
 
-		private string TestDataPath
+		private bool didResourcesExist;
+		private string[] copiedLocalisationTableGuids;
+
+		private string ResourcesDataPath
 		{
-			get { return Application.dataPath + "/" + RESOURCES_TEST_PATH; }
+			get { return Application.dataPath + "/" + RESOURCES_PATH; }
 		}
 
 		[OneTimeSetUp]
@@ -24,16 +27,27 @@ namespace DUCK.Localisation.Tests
 		{
 			Assert.IsTrue(AssetDatabase.IsValidFolder(TEST_DATA_PATH));
 
-			Directory.CreateDirectory(TestDataPath);
-			AssetDatabase.Refresh();
-
-			var locTableGuids = AssetDatabase.FindAssets("t: LocalisationTable", new []{ TEST_DATA_PATH });
-
-			foreach (var guid in locTableGuids)
+			didResourcesExist = Directory.Exists(ResourcesDataPath);
+			if (!didResourcesExist)
 			{
-				var sourcePath = AssetDatabase.GUIDToAssetPath(guid);
-				var destinationPath = "Assets/" + RESOURCES_TEST_PATH + "/" + Path.GetFileName(AssetDatabase.GUIDToAssetPath(guid));
-				AssetDatabase.CopyAsset(sourcePath, destinationPath);
+				Directory.CreateDirectory(ResourcesDataPath);
+			}
+
+			var localisationTableGuids = AssetDatabase.FindAssets("t: LocalisationTable", new []{ TEST_DATA_PATH });
+
+			copiedLocalisationTableGuids = new string[localisationTableGuids.Length];
+
+			for (var i = 0; i < localisationTableGuids.Length; i++)
+			{
+				var sourcePath = AssetDatabase.GUIDToAssetPath(localisationTableGuids[i]);
+				var destinationPath = "Assets/" + RESOURCES_PATH + Path.GetFileName(AssetDatabase.GUIDToAssetPath(localisationTableGuids[i]));
+
+				if (!AssetDatabase.CopyAsset(sourcePath, destinationPath))
+				{
+					throw new IOException("Could not create test asset: " + destinationPath);
+				}
+
+				copiedLocalisationTableGuids[i] = AssetDatabase.AssetPathToGUID(destinationPath);
 			}
 
 			AssetDatabase.Refresh();
@@ -44,7 +58,7 @@ namespace DUCK.Localisation.Tests
 		{
 			Assert.DoesNotThrow(() =>
 			{
-				Localiser.Initialise(RESOURCES_TEST_FOLDER, "en-GB");
+				Localiser.Initialise("", "en-GB");
 			});
 
 			Assert.IsTrue(Localiser.Initialised);
@@ -53,7 +67,17 @@ namespace DUCK.Localisation.Tests
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			Directory.Delete(TestDataPath, true);
+			foreach (var guid in copiedLocalisationTableGuids)
+			{
+				AssetDatabase.DeleteAsset(AssetDatabase.GUIDToAssetPath(guid));
+			}
+
+			if (!didResourcesExist)
+			{
+				Directory.Delete(ResourcesDataPath, recursive: true);
+				File.Delete(Application.dataPath + "Resources.meta");
+			}
+
 			AssetDatabase.Refresh();
 		}
 	}
