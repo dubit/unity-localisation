@@ -14,11 +14,11 @@ namespace DUCK.Localisation.Editor
 		/// </summary>
 		public const int KEY_CRC_ENCODING_VERSION = 1;
 
-		// Code generation
-		private const string REPLACE_SUFFIX = ".old";
+		// Code generation parameters for the Loc bridge class
+		private const string CONFIG_REPLACE_SUFFIX = ".old";
 		private const string CONFIG_FILENAME = "LocalisationConfig.cs";
-		private const string LOC_CLASS_NAME = "Loc";
-		private const string LOC_FOLDER_NAME = "Localisation";
+		private const string CONFIG_LOC_CLASS_NAME = "Loc";
+		private const string CONFIG_LOC_FOLDER_NAME = "Localisation";
 
 		public static LocalisationKeySchema CurrentSchema { get; private set; }
 
@@ -60,7 +60,8 @@ namespace DUCK.Localisation.Editor
 			if (localSchema == null)
 			{
 				EditorGUILayout.HelpBox(
-					"A key schema is a list of all the localisation keys in the project - generate a new one with the Assets menu and populate it with all the keys you need, or drag the existing asset into the field above.",
+					"A key schema is a list of all the localisation keys in the project - generate a new one using the Assets menu, " +
+					"and populate it with all the keys you need, or drag an existing asset into the field above.",
 					MessageType.Info);
 
 				var schema =
@@ -110,7 +111,7 @@ namespace DUCK.Localisation.Editor
 				"Click Generate to build a class file which can be referenced application-side to get localisation keys and other data in-game.",
 				MessageType.Info);
 			EditorGUILayout.LabelField("Output filename:", CONFIG_FILENAME);
-			EditorGUILayout.LabelField("Localisation data path:", "Resources/" + LOC_FOLDER_NAME + "/");
+			EditorGUILayout.LabelField("Localisation data path:", "Resources/" + CONFIG_LOC_FOLDER_NAME + "/");
 
 			EditorGUILayout.LabelField("Template required to generate localisation class");
 			EditorGUILayout.BeginHorizontal();
@@ -118,7 +119,7 @@ namespace DUCK.Localisation.Editor
 				(TextAsset)EditorGUILayout.ObjectField("Config template:", configTemplate, typeof(TextAsset), false);
 
 			EditorGUI.BeginDisabledGroup(configTemplate == null);
-			if (GUILayout.Button("Generate Loc Class"))
+			if (GUILayout.Button("Generate Config Class"))
 			{
 				GenerateLocalisationConfig();
 			}
@@ -149,14 +150,14 @@ namespace DUCK.Localisation.Editor
 			}
 			else
 			{
-				EditorGUILayout.HelpBox(string.Format("Click 'find' to search for localisation table assets in {0}", LOC_FOLDER_NAME),
+				EditorGUILayout.HelpBox(string.Format("Click 'find' to search for localisation table assets in {0}", CONFIG_LOC_FOLDER_NAME),
 					MessageType.Info);
 			}
 		}
 
 		private void FindAllTables()
 		{
-			Localiser.Initialise(LOC_FOLDER_NAME);
+			Localiser.Initialise(CONFIG_LOC_FOLDER_NAME);
 			tablePaths = Localiser.GetTablePaths();
 
 			if (metaData.Length < tablePaths.Keys.Count)
@@ -284,7 +285,7 @@ namespace DUCK.Localisation.Editor
 
 			if (File.Exists(filePath))
 			{
-				var renamedPath = filePath + REPLACE_SUFFIX;
+				var renamedPath = filePath + CONFIG_REPLACE_SUFFIX;
 				if (File.Exists(renamedPath))
 				{
 					File.Delete(renamedPath);
@@ -320,7 +321,7 @@ namespace DUCK.Localisation.Editor
 			}
 
 			var outputText = configTemplate.text;
-			outputText = outputText.Replace("{CLASS}", LOC_CLASS_NAME);
+			outputText = outputText.Replace("{CLASS}", CONFIG_LOC_CLASS_NAME);
 			outputText = outputText.Replace("{KEYS}", stringBuilder.ToString());
 			File.WriteAllText(filePath, outputText);
 
@@ -337,13 +338,13 @@ namespace DUCK.Localisation.Editor
 				AssetDatabase.CreateFolder("Assets", "Resources");
 			}
 
-			if (!AssetDatabase.IsValidFolder("Assets/Resources/" + LOC_FOLDER_NAME))
+			if (!AssetDatabase.IsValidFolder("Assets/Resources/" + CONFIG_LOC_FOLDER_NAME))
 			{
-				AssetDatabase.CreateFolder("Assets/Resources", LOC_FOLDER_NAME);
+				AssetDatabase.CreateFolder("Assets/Resources", CONFIG_LOC_FOLDER_NAME);
 			}
 
 			var asset = CreateInstance<LocalisationTable>();
-			var path = "Assets/Resources/" + LOC_FOLDER_NAME + "/New Localisation Table.asset";
+			var path = "Assets/Resources/" + CONFIG_LOC_FOLDER_NAME + "/New Localisation Table.asset";
 			ProjectWindowUtil.CreateAsset(asset, path);
 		}
 
