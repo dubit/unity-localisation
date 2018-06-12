@@ -112,13 +112,13 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.LabelField("Output filename:", CONFIG_FILENAME);
 			EditorGUILayout.LabelField("Localisation data path:", "Resources/" + LOC_FOLDER_NAME + "/");
 
-			EditorGUILayout.LabelField("Template required to generate locale class");
+			EditorGUILayout.LabelField("Template required to generate localisation class");
 			EditorGUILayout.BeginHorizontal();
 			configTemplate =
 				(TextAsset)EditorGUILayout.ObjectField("Config template:", configTemplate, typeof(TextAsset), false);
 
 			EditorGUI.BeginDisabledGroup(configTemplate == null);
-			if (GUILayout.Button("Generate Locale Class"))
+			if (GUILayout.Button("Generate Loc Class"))
 			{
 				GenerateLocalisationConfig();
 			}
