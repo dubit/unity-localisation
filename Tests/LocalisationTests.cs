@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using UnityEditor;
@@ -9,8 +10,8 @@ namespace DUCK.Localisation.Tests
 	public class LocalisationTests
 	{
 		private const string TEST_DATA_PATH = "Assets/unity-localisation/Tests/Data";
-		private const string TEST_TABLE_PATH1 = TEST_DATA_PATH + "/TestLocTable1";
-		private const string TEST_TABLE_PATH2 = TEST_DATA_PATH + "/TestLocTable2";
+		private const string TEST_TABLE_ENGLISH = TEST_DATA_PATH + "/TestEnglish";
+		private const string TEST_TABLE_FRENCH = TEST_DATA_PATH + "/TestFrench";
 
 		private const string RESOURCES_PATH = "Resources/";
 
@@ -62,6 +63,61 @@ namespace DUCK.Localisation.Tests
 			});
 
 			Assert.IsTrue(Localiser.Initialised);
+		}
+
+		[Test]
+		public void ExpectInitialisingWithEmptyFolderToFail()
+		{
+			Assert.Throws<ArgumentException>(() =>
+			{
+				Localiser.Initialise("InvalidFolderName_Does_Not_Exist", "en-GB");
+			});
+
+			Assert.IsFalse(Localiser.Initialised);
+		}
+
+		[Test]
+		public void ExpectRetrievingLocalisedStringToWork()
+		{
+			ExpectLocaliserToInitialise();
+
+			Assert.AreEqual("Hello", TestLoc.Get(TestKeys.Test.Hello));
+			Assert.AreEqual("Thanks", TestLoc.Get(TestKeys.Test.ThankYou));
+			Assert.AreEqual("Goodbye", TestLoc.Get(TestKeys.Test.Goodbye));
+		}
+
+		[Test]
+		public void ExpectSwitchingToValidLanguageToWork()
+		{
+			ExpectLocaliserToInitialise();
+
+			Assert.IsTrue(Localiser.SwitchCulture("fr"));
+
+			Assert.AreEqual("Bonjour", TestLoc.Get(TestKeys.Test.Hello));
+			Assert.AreEqual("Merci", TestLoc.Get(TestKeys.Test.ThankYou));
+			Assert.AreEqual("Au revoir", TestLoc.Get(TestKeys.Test.Goodbye));
+		}
+
+		[Test]
+		public void ExpectSwitchingToInvalidLanguageToFail()
+		{
+			ExpectLocaliserToInitialise();
+
+			Assert.IsFalse(Localiser.SwitchCulture("noSuchLocale"));
+
+			Assert.AreEqual("en-GB", Localiser.CurrentLocale.Name);
+		}
+
+		[Test]
+		public void ExpectSettingDefaultLanguageToSucceed()
+		{
+			ExpectLocaliserToInitialise();
+
+			Assert.IsTrue(Localiser.OverrideDefaultCulture("fr"));
+
+			Assert.IsTrue(Localiser.RevertToDefaultCulture());
+
+			Assert.AreEqual("fr", Localiser.CurrentLocale.Name);
 		}
 
 		[OneTimeTearDown]

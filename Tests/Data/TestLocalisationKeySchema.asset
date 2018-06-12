@@ -15,6 +15,6 @@ MonoBehaviour:
   - name: Test
     type: 0
     keys:
-    - Key1
-    - Key2
-    - Key3
+    - Hello
+    - ThankYou
+    - Goodbye

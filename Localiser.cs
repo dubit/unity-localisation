@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace DUCK.Localisation
@@ -51,7 +52,7 @@ namespace DUCK.Localisation
 		/// <param name="cultureName">Optional culture name to initialise with. Falls back to default culture if not passed in or invalid</param>
 		public static bool Initialise(string path, string cultureName = null)
 		{
-			CurrentLocale = TryGetCultureInfo(cultureName);
+			CurrentLocale = NameToCultureInfo(cultureName);
 
 			validTablePaths.Clear();
 			allTablePaths.Clear();
@@ -60,7 +61,7 @@ namespace DUCK.Localisation
 
 			if (localisationTables.Length == 0)
 			{
-				Debug.LogError(string.Format("No localisation tables found at path: {0}", path));
+				throw new ArgumentException(string.Format("No localisation tables found at path: {0}", path));
 			}
 
 			foreach (var locTable in localisationTables)
@@ -71,7 +72,7 @@ namespace DUCK.Localisation
 
 				if (locTable.SupportedLocales.Count == 0)
 				{
-					Debug.LogError(string.Format(
+					Debug.LogWarning(string.Format(
 						"Did not initialise localisation table '{0}' as it has no supported locales so would never be used.",
 						locTable.name));
 					continue;
@@ -102,7 +103,7 @@ namespace DUCK.Localisation
 
 			if (currentLocalisationTable == null && Application.isPlaying)
 			{
-				Debug.LogError(string.Format("Error: unsupported locale: {0}, switching to {1}", CurrentLocale.Name, defaultCulture));
+				Debug.LogWarning(string.Format("Error: unsupported locale: {0}, switching to {1}", CurrentLocale.Name, defaultCulture));
 				SwitchCulture(defaultCulture);
 			}
 
@@ -111,38 +112,53 @@ namespace DUCK.Localisation
 
 		/// <summary>
 		/// Sets up the default culture, i.e. the language the application will fall back to if it can't load the one requested
+		/// <param name="culture">The culture to make default</param>
+		/// <returns>bool - if the culture was successfuly set as the default</returns>
 		/// </summary>
-		public static void SetDefaultCulture(string defaultCultureName)
+		public static bool OverrideDefaultCulture(string culture)
 		{
-			if (TryGetCultureInfo(defaultCultureName).Name == defaultCultureName)
+			if (SupportedLocales.All(c => c.Name != culture) || NameToCultureInfo(culture).Name != culture)
 			{
-				defaultCulture = defaultCultureName;
+				Debug.LogWarning("Invalid default culture name: " + culture);
+				return false;
 			}
-			else
-			{
-				Debug.LogError("Invalid culture name: " + defaultCultureName);
-			}
+
+			defaultCulture = culture;
+			return true;
 		}
 
 		/// <summary>
 		/// Switches the application to the specified culture
+		/// <param name="culture">The culture to switch to</param>
+		/// <returns>bool - if the culture was switched to successfully</returns>
 		/// </summary>
-		public static void SwitchCulture(string cultureName)
+		public static bool SwitchCulture(string culture)
 		{
-			var loadedTable = LoadLocalisationTable(cultureName);
+			var loadedTable = LoadLocalisationTable(culture);
 			if (loadedTable == null)
 			{
-				Debug.LogError(string.Format("Error loading localisation table for locale: {0}", cultureName));
-				return;
+				Debug.LogWarning(string.Format("Error loading localisation table for locale: {0}", culture));
+				return false;
 			}
 
-			CurrentLocale = new CultureInfo(cultureName);
+			CurrentLocale = new CultureInfo(culture);
 			currentLocalisationTable = loadedTable;
 
 			if (OnLocaleChanged != null)
 			{
 				OnLocaleChanged.Invoke();
 			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Reverts to select the default Culture
+		/// <returns>bool - if the default culture was switched to successfully</returns>
+		/// </summary>
+		public static bool RevertToDefaultCulture()
+		{
+			return SwitchCulture(defaultCulture);
 		}
 
 		/// <summary>
@@ -179,14 +195,8 @@ namespace DUCK.Localisation
 			return allTablePaths;
 		}
 
-		/// <returns>Returns the correct CultureInfo if name is valid, otherwise returns CultureInfo(defaultCulture)</returns>
-		private static CultureInfo TryGetCultureInfo(string cultureName = "")
+		private static CultureInfo NameToCultureInfo(string cultureName)
 		{
-			if (string.IsNullOrEmpty(cultureName))
-			{
-				cultureName = defaultCulture;
-			}
-
 			CultureInfo cultureInfo = null;
 
 			try
