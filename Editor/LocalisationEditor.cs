@@ -157,7 +157,7 @@ namespace DUCK.Localisation.Editor
 
 		private void FindAllTables()
 		{
-			Localiser.Initialise(CONFIG_LOC_FOLDER_NAME, Localiser.DEFAULT_CULTURE);
+			Localiser.Initialise(CONFIG_LOC_FOLDER_NAME, Localiser.DefaultCulture);
 			tablePaths = Localiser.GetTablePaths();
 
 			if (metaData.Length < tablePaths.Keys.Count)

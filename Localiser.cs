@@ -13,7 +13,7 @@ namespace DUCK.Localisation
 	/// </summary>
 	public static class Localiser
 	{
-		public const string DEFAULT_CULTURE = "en-US";
+		public static string DefaultCulture { get; private set; } = "en-US";
 
 		/// <summary>
 		/// List of CultureInfos representing the languages supported by the localiser
@@ -104,8 +104,8 @@ namespace DUCK.Localisation
 
 			if (currentLocalisationTable == null && Application.isPlaying)
 			{
-				Debug.LogWarning(string.Format("Error: unsupported locale: {0}, switching to {1}", CurrentLocale.Name, DEFAULT_CULTURE));
-				SwitchCulture(DEFAULT_CULTURE);
+				Debug.LogWarning(string.Format("Error: unsupported locale: {0}, switching to {1}", CurrentLocale.Name, DefaultCulture));
+				SwitchCulture(DefaultCulture);
 			}
 
 			return Initialised;
@@ -124,7 +124,7 @@ namespace DUCK.Localisation
 				return false;
 			}
 
-			DEFAULT_CULTURE = culture;
+			DefaultCulture = culture;
 			return true;
 		}
 
@@ -159,7 +159,7 @@ namespace DUCK.Localisation
 		/// </summary>
 		public static bool RevertToDefaultCulture()
 		{
-			return SwitchCulture(DEFAULT_CULTURE);
+			return SwitchCulture(DefaultCulture);
 		}
 
 		/// <summary>
@@ -207,7 +207,7 @@ namespace DUCK.Localisation
 			catch (ArgumentException)
 			{
 				Debug.LogError("Invalid culture name: " + cultureName);
-				cultureInfo = new CultureInfo(DEFAULT_CULTURE);
+				cultureInfo = new CultureInfo(DefaultCulture);
 			}
 
 			return cultureInfo;
