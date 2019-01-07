@@ -1,19 +1,23 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace DUCK.Localisation
+namespace DUCK.Localisation.LocalisedObjects
 {
+	/// <summary>
+	/// Automatically updates an Image's sprite to a different file path specified in the localisation table for the current locale
+	/// </summary>
 	[RequireComponent(typeof(Image))]
 	public class LocalisedImage : LocalisedObject
 	{
-		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Image; } }
-
 		private Image image;
+
+		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Image; } }
 
 		protected override void Awake()
 		{
-			base.Awake();
 			image = GetComponent<Image>();
+
+			base.Awake();
 		}
 
 		protected override void OnLocaleChanged()
@@ -21,9 +25,11 @@ namespace DUCK.Localisation
 			if (image == null) return;
 
 			string newPath;
+
 			if (Localiser.GetLocalisedString(localisationKey, out newPath))
 			{
 				var newSprite = Resources.Load<Sprite>(newPath);
+
 				if (newSprite != null)
 				{
 					image.sprite = newSprite;

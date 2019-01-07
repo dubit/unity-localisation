@@ -335,11 +335,11 @@ namespace DUCK.Localisation.Editor
 			Func<string, string, string, string> cleanOutput = (csvKey1, csvKey2, csvValue) =>
 				string.Format("{0},{1},\"{2}\"", csvKey1, csvKey2, csvValue);
 
-			if (locTable.crcEncodingVersion != LocalisationEditor.KEY_CRC_ENCODING_VERSION)
+			if (locTable.CRCEncodingVersion != LocalisationEditor.KEY_CRC_ENCODING_VERSION)
 			{
 				Debug.LogError(string.Format(
 					"Table encoding version ({0}) does not match current version (1) - please update the table before trying to export anything.",
-					locTable.crcEncodingVersion));
+					locTable.CRCEncodingVersion));
 				return;
 			}
 

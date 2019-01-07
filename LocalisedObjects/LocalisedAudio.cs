@@ -1,18 +1,22 @@
 ﻿using UnityEngine;
 
-namespace DUCK.Localisation
+namespace DUCK.Localisation.LocalisedObjects
 {
+	/// <summary>
+	/// Automatically updates an AudioSource's clip to a different file path specified in the localisation table for the current locale
+	/// </summary>
 	[RequireComponent(typeof(AudioSource))]
 	public class LocalisedAudio : LocalisedObject
 	{
-		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Audio; } }
-
 		private AudioSource source;
+
+		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Audio; } }
 
 		protected override void Awake()
 		{
-			base.Awake();
 			source = GetComponent<AudioSource>();
+
+			base.Awake();
 		}
 
 		protected override void OnLocaleChanged()
@@ -20,9 +24,11 @@ namespace DUCK.Localisation
 			if (source == null) return;
 
 			string newPath;
+
 			if (Localiser.GetLocalisedString(localisationKey, out newPath))
 			{
 				var newAudio = Resources.Load<AudioClip>(newPath);
+
 				if (newAudio != null)
 				{
 					source.clip = newAudio;
