@@ -97,10 +97,13 @@ namespace DUCK.Localisation.Editor
 				categoriesByResourceType[resourceType] = new List<int>();
 			}
 
-			for (var i = 0; i < schema.categories.Length; i++)
+			if (schema.categories != null)
 			{
-				var category = schema.categories[i];
-				categoriesByResourceType[category.type].Add(i);
+				for (var i = 0; i < schema.categories.Length; i++)
+				{
+					var category = schema.categories[i];
+					categoriesByResourceType[category.type].Add(i);
+				}
 			}
 		}
 	}
