@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -158,8 +159,11 @@ namespace DUCK.Localisation.Editor
 
 		private void FindAllTables()
 		{
-			Localiser.Initialise(LocalisationPreferences.LocalisationTableFolder, Localiser.DefaultCulture);
-			tablePaths = Localiser.GetTablePaths();
+			var localisationTables = AssetDatabase.FindAssets($"t:{nameof(LocalisationTable)}")
+				.Select(AssetDatabase.GUIDToAssetPath)
+				.Where(p => !p.Contains("Tests/Data/Test"));
+
+			tablePaths = localisationTables.ToDictionary(Path.GetFileName, v => v);
 
 			if (metaData.Length < tablePaths.Keys.Count)
 			{
@@ -169,7 +173,7 @@ namespace DUCK.Localisation.Editor
 			var i = 0;
 			foreach (var tablePath in tablePaths)
 			{
-				var locTable = Resources.Load<LocalisationTable>(tablePath.Value);
+				var locTable = AssetDatabase.LoadAssetAtPath<LocalisationTable>(tablePath.Value);
 				if (locTable != null)
 				{
 					metaData[i].missingValues = LocalisationTableEditor.FindEmptyValues(locTable, CurrentSchema, true);
@@ -205,7 +209,7 @@ namespace DUCK.Localisation.Editor
 				{
 					EditorGUILayout.BeginHorizontal();
 					tableFoldouts[i] = EditorGUILayout.Foldout(tableFoldouts[i],
-						string.Format("{0}\tResources/{1}.asset", tablePath.Key, tablePath.Value));
+						$"{tablePath.Key}\t{tablePath.Value}");
 					if (metaData[i].HasProblem)
 					{
 						EditorGUILayout.LabelField("✕", errorIconStyle, GUILayout.MaxWidth(40f));
@@ -218,12 +222,11 @@ namespace DUCK.Localisation.Editor
 
 					if (tableFoldouts[i])
 					{
-						tableFoldouts = new bool[tableFoldouts.Length];
-						tableFoldouts[i] = true;
-
 						if (!metaData[i].HasProblem)
 						{
+							EditorGUI.indentLevel++;
 							EditorGUILayout.LabelField("No errors detected.", fineLabelStyle);
+							EditorGUI.indentLevel--;
 							i++;
 							continue;
 						}

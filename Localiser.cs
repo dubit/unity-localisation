@@ -188,14 +188,6 @@ namespace DUCK.Localisation
 			return true;
 		}
 
-		/// <summary>
-		/// Dictionary of all localisation tables (name --> path) found in the Resources target folder (whether valid or not)
-		/// </summary>
-		public static Dictionary<string, string> GetTablePaths()
-		{
-			return allTablePaths;
-		}
-
 		private static CultureInfo NameToCultureInfo(string cultureName)
 		{
 			CultureInfo cultureInfo = null;
