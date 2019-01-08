@@ -11,7 +11,9 @@ namespace DUCK.Localisation.LocalisedObjects
 	{
 		private Image image;
 
+#if UNITY_EDITOR
 		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Image; } }
+#endif
 
 		protected override void Awake()
 		{

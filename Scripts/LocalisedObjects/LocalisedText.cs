@@ -11,7 +11,9 @@ namespace DUCK.Localisation.LocalisedObjects
 	{
 		private Text text;
 
+#if UNITY_EDITOR
 		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Text; } }
+#endif
 
 		protected override void Awake()
 		{

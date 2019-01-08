@@ -10,7 +10,9 @@ namespace DUCK.Localisation.LocalisedObjects
 	{
 		private AudioSource source;
 
+#if UNITY_EDITOR
 		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Audio; } }
+#endif
 
 		protected override void Awake()
 		{
