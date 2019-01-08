@@ -2,11 +2,11 @@
 
 ## Contents
 
-1. [Create the localisation key schema](##create-the-localisation-key-schema)
-2. [Generate code](##generate-code)
-3. [Populate Data](##populate-data)
-4. [Initialization](##initialization)
-5. [Next Steps](##next-steps)
+1. [Create the localisation key schema](#create-the-localisation-key-schema)
+2. [Generate code](#generate-code)
+3. [Populate Data](#populate-data)
+4. [Initialization](#initialization)
+5. [Next Steps](#next-steps)
 
 ## Create the localisation key schema
 **Step 1**
