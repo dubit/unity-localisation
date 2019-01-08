@@ -30,7 +30,7 @@ namespace DUCK.Localisation.Editor
 
 		public override void OnInspectorGUI()
 		{
-			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex), 
+			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex),
 				(serializedObject.targetObject as ILocalisedObject).ResourceType, localisationKey, keyName, categoryName);
 
 			serializedObject.ApplyModifiedProperties();
@@ -48,7 +48,7 @@ namespace DUCK.Localisation.Editor
 
 			if (currentSchema == null)
 			{
-				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: Dubit/Localisation",
+				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: DUCK/Localisation",
 					MessageType.Warning);
 			}
 			else
@@ -87,6 +87,8 @@ namespace DUCK.Localisation.Editor
 					}
 				}
 
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Category", GUILayout.MaxWidth(100f));
 				var categoryIndex = selectedKeyAndCategory.y;
 				if (categoryIndex < 0 || categoryIndex >= availableCategories.Length)
 				{
@@ -94,7 +96,10 @@ namespace DUCK.Localisation.Editor
 				}
 				categoryIndex = EditorGUILayout.Popup(categoryIndex, categoryNames);
 				selectedKeyAndCategory.y = categoryIndex;
+				EditorGUILayout.EndHorizontal();
 
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Key", GUILayout.MaxWidth(100f));
 				var category = currentSchema.categories[availableCategories[categoryIndex]];
 				var locKeyIndex = selectedKeyAndCategory.x;
 				if (locKeyIndex < 0 || locKeyIndex >= category.keys.Length)
@@ -103,6 +108,7 @@ namespace DUCK.Localisation.Editor
 				}
 				locKeyIndex = EditorGUILayout.Popup(locKeyIndex, category.keys);
 				selectedKeyAndCategory.x = locKeyIndex;
+				EditorGUILayout.EndHorizontal();
 
 				var selectedLocKey = category.keys[locKeyIndex];
 				var savedLocKey = keyName.stringValue;
