@@ -19,7 +19,7 @@ Set the category and the key. and press the set button. (The UI is the same for 
 ![LocalisedText](./localised-text.png)
 
 ## Retrieving a localised string in code
-`Loc.Get(Loc.MainMenu.MainMenuTitle);`
+`Localiser.GetLocalisedString(Loc.MainMenu.MainMenuTitle);`
 
 ## Change language at runtime
 
