@@ -3,6 +3,10 @@
 ## What is it?
 A library containing classes for adding localisation support to your application.
 
+## Requirements
+* Unity 2017 or higher
+* .NET 4.X or higher
+
 ## How to use it.
 The localiser works by ingesting a set of localisation keys (the ID values for each string in your application, e.g. MainMenuTitle, MainMenuBodyText, MainMenuStartButtonText etc). These can then be used to generate a localisation class in code which declares enums containing all these keys, which the application can use to retrieve them in a type-safe way. The enum values are converted to CRC/hash values so that retrieval is optimal in terms of performance, too.
 
@@ -44,7 +48,7 @@ If you change anything in the schema, you will need to regenerate the Loc class 
 
 Refer to the API of DUCK.Localisation.Localiser.cs - but you will probably only need to do the following in most cases:
 
-* Localiser.Initialise("Localisation"); // default: looks in Resources/Localisation and starts in the user's device language 
+* Localiser.Initialise("Localisation"); // default: looks in Resources/Localisation and starts in the user's device language
 
 or...
 
