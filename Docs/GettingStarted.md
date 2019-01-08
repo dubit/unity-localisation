@@ -21,7 +21,8 @@ In the localisation window click "Create new empty key schema".
 
 ![Create new schema](./create-new-schema.png)
 
-This creates a new `LocalisationKeySchema.asset` config file in the currently selected directory. Place this anywhere you like or rename it. **You will only need one of these for your project**
+This creates a new `LocalisationKeySchema.asset` config file in the currently selected directory. Place this anywhere you like or rename it. **You will only need one of these for your project.**
+
 Think of this schema as a master localisation dictionary for your project. 
 The schema stores all the categories and localisation keys that you will use in your project. Each piece of localised content should have a key in here and belong to a category.
 
@@ -68,7 +69,7 @@ Once this field has been assigned the window will look like this:
 
 ![Generate Config Class](./generate-config-class.png)
 
-To generate the config class first you need to assign a template. This is just a text asset. One is provided with this package "LocalisationConfigTemplate" but you may want to use your own to conform with your own coding style. Assign a emplate and then clik the button "Generate Config Class" (marked "2" in the image above)
+To generate the config class first you need to assign a template. This is just a text asset. One is provided with this package "LocalisationConfigTemplate" but you may want to use your own to conform with your own coding style. Assign a emplate and then click the button "Generate Config Class" (marked "2" in the image above)
 This will generate the config file and save it to the location specified in the [preferences](./Preferences.md).
 
 ## Populate Data
@@ -112,4 +113,4 @@ or alternatively...
 In most cases, your default table should have both en-GB and en-US supported, and the localiser will retrieve all compatible tables from this folder.
 
 ## Next steps
-It's now ready to use. See [Basic Usage](./Docs/BasicUsage.md).
+It's now ready to use. See [Basic Usage](./BasicUsage.md).
