@@ -30,7 +30,7 @@ namespace DUCK.Localisation.Editor
 
 		public override void OnInspectorGUI()
 		{
-			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex), 
+			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex),
 				(serializedObject.targetObject as ILocalisedObject).ResourceType, localisationKey, keyName, categoryName);
 
 			serializedObject.ApplyModifiedProperties();
@@ -48,7 +48,7 @@ namespace DUCK.Localisation.Editor
 
 			if (currentSchema == null)
 			{
-				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: Dubit/Localisation",
+				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: DUCK/Localisation",
 					MessageType.Warning);
 			}
 			else
