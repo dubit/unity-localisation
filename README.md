@@ -7,7 +7,20 @@ A library containing classes for adding localisation support to your application
 * Unity 2017 or higher
 * .NET 4.X or higher
 
+## Features
+* Supports localisation for different media types (Text, Audio, Images).
+* Type safe localisation key/value retrieval.
+* Split translations into categories for easier organisation.
+* Validation to auto detect missing values for different locales.
+* Easy to use out of the box components: `LocalisedText`, `LocalisedAudio`, `LocalisedImage`
+* Simple API to retrieve localised values by code: `Loc.Get(Category.Key.KeyName);`
+
 ## How to use it.
+Please refer to the following guides.
+* [GettingStarted](./Docs/GettibgStarted.md)- for info about setting up your project for localisation
+* [BasicUsage](./Docs/BasicUsage.md) - covers most of the basic use cases.
+* [Preferences](./Docs/preferences.md)
+
 The localiser works by ingesting a set of localisation keys (the ID values for each string in your application, e.g. MainMenuTitle, MainMenuBodyText, MainMenuStartButtonText etc). These can then be used to generate a localisation class in code which declares enums containing all these keys, which the application can use to retrieve them in a type-safe way. The enum values are converted to CRC/hash values so that retrieval is optimal in terms of performance, too.
 
 For this reason, the setup includes two parts:
