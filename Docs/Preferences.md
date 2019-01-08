@@ -10,5 +10,5 @@ You can tweak the preferences by going to Edit -> Preferences on the tool bar an
 
 There are 2 settings to tweak. You can configure where the generated config file goes and where the new localisation table assets will be created. You can leave the defaults if you and move the assets after they are created, but for convenience it's recommended to set the preferred paths in your project so you won't have to move them manually.
 
-**Paths in preferences should not contain the "Assets" folder. It's added for you**
+**Paths in preferences should not contain the "Assets" folder. It's added for you.**
  
