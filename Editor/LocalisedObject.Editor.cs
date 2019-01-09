@@ -53,7 +53,12 @@ namespace DUCK.Localisation.Editor
 		{
 			var currentSchema = LocalisationEditor.CurrentSchema;
 
-			if (currentSchema == null)
+			if (resourceType == LocalisedResourceType.Unknown)
+			{
+				EditorGUILayout.HelpBox("This component doesn't specify a resource type. Please specify one by adding the [ResourceType] attribute to the class",
+					MessageType.Error);
+			}
+			else if (currentSchema == null)
 			{
 				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: DUCK/Localisation",
 					MessageType.Warning);
