@@ -54,10 +54,16 @@ namespace DUCK.Localisation.LocalisedObjects
 
 		private void OnLocaleChanged()
 		{
-			var localisedText = "";
-			var foundtranslation = Localiser.GetLocalisedString(localisationKey, out localisedText);
-
-			HandleLocaleChanged(foundtranslation, localisedText);
+			if (Localiser.Initialised)
+			{
+				var localisedText = "";
+				var foundtranslation = Localiser.GetLocalisedString(localisationKey, out localisedText);
+				HandleLocaleChanged(foundtranslation, localisedText);
+			}
+			else
+			{
+				Debug.LogWarning("Cannot localise, the localiser is not initialised!");
+			}
 		}
 	}
 }
