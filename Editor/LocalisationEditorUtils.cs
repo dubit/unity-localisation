@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DUCK.Localisation.LocalisedObjects;
 using UnityEditor;
 
 namespace DUCK.Localisation.Editor

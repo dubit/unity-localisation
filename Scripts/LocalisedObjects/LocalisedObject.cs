@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DUCK.Localisation
+namespace DUCK.Localisation.LocalisedObjects
 {
 	/// <summary>
 	/// LocalisedObject family of components: attach one of these to a Text, Image or AudioSource to make them localisation-aware.

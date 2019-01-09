@@ -1,4 +1,4 @@
-﻿namespace DUCK.Localisation
+﻿namespace DUCK.Localisation.LocalisedObjects
 {
 	public interface ILocalisedObject
 	{
