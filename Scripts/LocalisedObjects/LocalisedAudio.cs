@@ -6,7 +6,7 @@ namespace DUCK.Localisation.LocalisedObjects
 	/// Automatically updates an AudioSource's clip to a different file path specified in the localisation table for the current locale
 	/// </summary>
 	[RequireComponent(typeof(AudioSource))]
-	public class LocalisedAudio : LocalisedObject
+	public class LocalisedAudio : AbsrtactLocalisedObject
 	{
 		private AudioSource source;
 

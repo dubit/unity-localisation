@@ -7,7 +7,7 @@ namespace DUCK.Localisation.LocalisedObjects
 	/// Automatically updates a Text component's text to the current locale
 	/// </summary>
 	[RequireComponent(typeof(Text))]
-	public class LocalisedText : LocalisedObject
+	public class LocalisedText : AbsrtactLocalisedObject
 	{
 		private Text text;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DUCK.Localisation.Editor
 {
-	[CustomEditor(typeof(LocalisedObject), true)]
+	[CustomEditor(typeof(AbsrtactLocalisedObject), true)]
 	public class LocalisedObjectEditor : UnityEditor.Editor
 	{
 		private SerializedProperty localisationKey;
@@ -42,7 +42,7 @@ namespace DUCK.Localisation.Editor
 			initialised = true;
 		}
 
-		public static Vector2Int DrawLocalisedObject(bool initialised, Vector2Int selectedKeyAndCategory, LocalisedObject.LocalisedResourceType resourceType,
+		public static Vector2Int DrawLocalisedObject(bool initialised, Vector2Int selectedKeyAndCategory, AbsrtactLocalisedObject.LocalisedResourceType resourceType,
 			SerializedProperty localisationKey, SerializedProperty keyName, SerializedProperty categoryName, bool autosave = false)
 		{
 			var currentSchema = LocalisationEditor.CurrentSchema;

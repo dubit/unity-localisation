@@ -73,10 +73,10 @@ namespace DUCK.Localisation.Editor
 		/// <summary>
 		/// Maintains a dictionary of categories by resource type, allowing calling code to get all key categories for a certain kind of content.
 		/// </summary>
-		private static readonly Dictionary<LocalisedObject.LocalisedResourceType, List<int>> categoriesByResourceType =
-			new Dictionary<LocalisedObject.LocalisedResourceType, List<int>>();
+		private static readonly Dictionary<AbsrtactLocalisedObject.LocalisedResourceType, List<int>> categoriesByResourceType =
+			new Dictionary<AbsrtactLocalisedObject.LocalisedResourceType, List<int>>();
 
-		public static int[] GetAvailableCategories(LocalisedObject.LocalisedResourceType resourceType)
+		public static int[] GetAvailableCategories(AbsrtactLocalisedObject.LocalisedResourceType resourceType)
 		{
 			return categoriesByResourceType.ContainsKey(resourceType)
 				? categoriesByResourceType[resourceType].ToArray()
@@ -92,8 +92,8 @@ namespace DUCK.Localisation.Editor
 			}
 
 			categoriesByResourceType.Clear();
-			foreach (var resourceType in (LocalisedObject.LocalisedResourceType[])System.Enum.GetValues(
-				typeof(LocalisedObject.LocalisedResourceType)))
+			foreach (var resourceType in (AbsrtactLocalisedObject.LocalisedResourceType[])System.Enum.GetValues(
+				typeof(AbsrtactLocalisedObject.LocalisedResourceType)))
 			{
 				categoriesByResourceType[resourceType] = new List<int>();
 			}

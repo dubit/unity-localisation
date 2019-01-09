@@ -3,7 +3,7 @@
 	public interface ILocalisedObject
 	{
 #if UNITY_EDITOR
-		LocalisedObject.LocalisedResourceType ResourceType { get; }
+		AbsrtactLocalisedObject.LocalisedResourceType ResourceType { get; }
 #endif
 	}
 }

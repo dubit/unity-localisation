@@ -6,7 +6,7 @@ namespace DUCK.Localisation.LocalisedObjects
 	/// LocalisedObject family of components: attach one of these to a Text, Image or AudioSource to make them localisation-aware.
 	/// When the language is changed, they will automatically try to update their content to the localised version.
 	/// </summary>
-	public abstract class LocalisedObject : MonoBehaviour, ILocalisedObject
+	public abstract class AbsrtactLocalisedObject : MonoBehaviour, ILocalisedObject
 	{
 		// Only used by Editor for human-readable display options
 		// When built, all categories and keys are compiled away to CRC int values
