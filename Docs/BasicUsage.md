@@ -31,7 +31,7 @@ This will automatically update any localisation-sensitive components.
 In some situations you may want to set the text, sprite, or audio on a different component other than `Text`, `Image` or `AudioSource`.
 
 For example you may want to set the text on a `TextMeshPro` object. To accomplish this just extend `LocalisedObject` and make the relevant changes.
-
+#endif
 eg:
 
 ```c#
@@ -40,7 +40,9 @@ public class LocalisedTextMeshProUGUI : LocalisedObject
 {
     private TextMeshProUGUI text;
 
+#if UNITY_EDITOR
     public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Text; } }
+#endif
 
     protected override void Awake()
     {
