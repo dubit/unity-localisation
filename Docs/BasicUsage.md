@@ -29,10 +29,10 @@ The actual content of each type is still a string. The audio & image components 
 
 This will automatically update any localisation-sensitive components.
 
-## Extending AbsrtactLocalisedObject
+## Extending AbstractLocalisedObject
 In some situations you may want to set the text, sprite, or audio on a different component other than `Text`, `Image` or `AudioSource`.
 
-For example you may want to set the text on a `TextMeshPro` object. To accomplish this just extend `AbsrtactLocalisedObject` and make the relevant changes.
+For example you may want to set the text on a `TextMeshPro` object. To accomplish this just extend `AbstractLocalisedObject` and make the relevant changes.
 #endif
 eg:
 
