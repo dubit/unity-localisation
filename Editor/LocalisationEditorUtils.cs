@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DUCK.Localisation.LocalisedObjects;
 using UnityEditor;
 
@@ -73,10 +74,10 @@ namespace DUCK.Localisation.Editor
 		/// <summary>
 		/// Maintains a dictionary of categories by resource type, allowing calling code to get all key categories for a certain kind of content.
 		/// </summary>
-		private static readonly Dictionary<AbsrtactLocalisedObject.LocalisedResourceType, List<int>> categoriesByResourceType =
-			new Dictionary<AbsrtactLocalisedObject.LocalisedResourceType, List<int>>();
+		private static readonly Dictionary<LocalisedResourceType, List<int>> categoriesByResourceType =
+			new Dictionary<LocalisedResourceType, List<int>>();
 
-		public static int[] GetAvailableCategories(AbsrtactLocalisedObject.LocalisedResourceType resourceType)
+		public static int[] GetAvailableCategories(LocalisedResourceType resourceType)
 		{
 			return categoriesByResourceType.ContainsKey(resourceType)
 				? categoriesByResourceType[resourceType].ToArray()
@@ -92,8 +93,8 @@ namespace DUCK.Localisation.Editor
 			}
 
 			categoriesByResourceType.Clear();
-			foreach (var resourceType in (AbsrtactLocalisedObject.LocalisedResourceType[])System.Enum.GetValues(
-				typeof(AbsrtactLocalisedObject.LocalisedResourceType)))
+			foreach (var resourceType in (LocalisedResourceType[])Enum.GetValues(
+				typeof(LocalisedResourceType)))
 			{
 				categoriesByResourceType[resourceType] = new List<int>();
 			}

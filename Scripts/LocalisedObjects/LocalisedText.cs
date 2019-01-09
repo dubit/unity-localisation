@@ -7,30 +7,12 @@ namespace DUCK.Localisation.LocalisedObjects
 	/// Automatically updates a Text component's text to the current locale
 	/// </summary>
 	[RequireComponent(typeof(Text))]
-	public class LocalisedText : AbsrtactLocalisedObject
+	[ResourceType(LocalisedResourceType.Text)]
+	public class LocalisedText : AbstractLocalisedObject<Text>
 	{
-		private Text text;
-
-#if UNITY_EDITOR
-		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Text; } }
-#endif
-
-		protected override void Awake()
+		protected override void HandleLocaleChanged(bool translationFound, string localisedString)
 		{
-			text = GetComponent<Text>();
-
-			base.Awake();
-		}
-
-		protected override void OnLocaleChanged()
-		{
-			if (text == null) return;
-
-			string newText;
-
-			text.text = Localiser.GetLocalisedString(localisationKey, out newText)
-				? newText
-				: string.Format("<color=red>{0}</color>", localisationKey);
+			Component.text = translationFound ? localisedString : $"<color=red>{localisationKey}</color>";
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace DUCK.Localisation.Editor
 		public class LocalisationKeyCategory
 		{
 			public string name = string.Empty;
-			public AbsrtactLocalisedObject.LocalisedResourceType type = AbsrtactLocalisedObject.LocalisedResourceType.Text;
+			public LocalisedResourceType type = LocalisedResourceType.Text;
 			public string[] keys = { };
 
 			public override string ToString()

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DUCK.Localisation.Editor
 {
-	[CustomEditor(typeof(AbsrtactLocalisedObject), true)]
+	[CustomEditor(typeof(AbstractLocalisedObject), true)]
 	public class LocalisedObjectEditor : UnityEditor.Editor
 	{
 		private SerializedProperty localisationKey;
@@ -32,7 +32,7 @@ namespace DUCK.Localisation.Editor
 		public override void OnInspectorGUI()
 		{
 			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex),
-				(serializedObject.targetObject as ILocalisedObject).ResourceType, localisationKey, keyName, categoryName);
+				(serializedObject.targetObject as AbstractLocalisedObject).ResourceType, localisationKey, keyName, categoryName);
 
 			serializedObject.ApplyModifiedProperties();
 
@@ -42,8 +42,14 @@ namespace DUCK.Localisation.Editor
 			initialised = true;
 		}
 
-		public static Vector2Int DrawLocalisedObject(bool initialised, Vector2Int selectedKeyAndCategory, AbsrtactLocalisedObject.LocalisedResourceType resourceType,
-			SerializedProperty localisationKey, SerializedProperty keyName, SerializedProperty categoryName, bool autosave = false)
+		public static Vector2Int DrawLocalisedObject(
+			bool initialised,
+			Vector2Int selectedKeyAndCategory,
+			LocalisedResourceType resourceType,
+			SerializedProperty localisationKey,
+			SerializedProperty keyName,
+			SerializedProperty categoryName,
+			bool autosave = false)
 		{
 			var currentSchema = LocalisationEditor.CurrentSchema;
 
