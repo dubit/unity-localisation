@@ -7,39 +7,23 @@ namespace DUCK.Localisation.LocalisedObjects
 	/// Automatically updates an Image's sprite to a different file path specified in the localisation table for the current locale
 	/// </summary>
 	[RequireComponent(typeof(Image))]
-	public class LocalisedImage : LocalisedObject
+	[ResourceType(LocalisedResourceType.Image)]
+	public class LocalisedImage : AbstractLocalisedObject<Image>
 	{
-		private Image image;
-
-#if UNITY_EDITOR
-		public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Image; } }
-#endif
-
-		protected override void Awake()
+		protected override void HandleLocaleChanged(bool translationFound, string localisedString)
 		{
-			image = GetComponent<Image>();
-
-			base.Awake();
-		}
-
-		protected override void OnLocaleChanged()
-		{
-			if (image == null) return;
-
-			string newPath;
-
-			if (Localiser.GetLocalisedString(localisationKey, out newPath))
+			if (translationFound)
 			{
-				var newSprite = Resources.Load<Sprite>(newPath);
+				var newSprite = Resources.Load<Sprite>(localisedString);
 
 				if (newSprite != null)
 				{
-					image.sprite = newSprite;
+					Component.sprite = newSprite;
 				}
 			}
 			else
 			{
-				image.sprite = null;
+				Component.sprite = null;
 			}
 		}
 	}

@@ -16,6 +16,8 @@ To configure it add the base component (`Text`, `Image` or `AudioSource`), then 
 
 Set the category and the key. and press the set button. (The UI is the same for all 3)
 
+The actual content of each type is still a string. The audio & image components treat this localised string as a path and attempt to load a sprite or audio source for the corresponding value.
+
 ![LocalisedText](./localised-text.png)
 
 ## Retrieving a localised string in code
@@ -27,40 +29,29 @@ Set the category and the key. and press the set button. (The UI is the same for 
 
 This will automatically update any localisation-sensitive components.
 
-## Extending LocalisedObject
+## Extending AbstractLocalisedObject
 In some situations you may want to set the text, sprite, or audio on a different component other than `Text`, `Image` or `AudioSource`.
 
-For example you may want to set the text on a `TextMeshPro` object. To accomplish this just extend `LocalisedObject` and make the relevant changes.
+For example you may want to set the text on a `TextMeshPro` object. To accomplish this just extend `AbstractLocalisedObject` and make the relevant changes.
 #endif
 eg:
 
 ```c#
 [RequireComponent(typeof(TextMeshProUGUI))]
-public class LocalisedTextMeshProUGUI : LocalisedObject
+[ResourceType(LocalisedResourceType.Text)]
+public class LocalisedText : AbstractLocalisedObject<TextMeshProUGUI>
 {
-    private TextMeshProUGUI text;
-
-#if UNITY_EDITOR
-    public override LocalisedResourceType ResourceType { get { return LocalisedResourceType.Text; } }
-#endif
-
-    protected override void Awake()
+    // Called whenever locale changes (and when the component awakes)
+    protected override void HandleLocaleChanged(bool translationFound, string localisedString)
     {
-        text = GetComponent<TextMeshProUGUI>();
-
-        base.Awake();
+        Component.text = translationFound ? localisedString : $"<color=red>{localisationKey}</color>";
     }
-
-    protected override void OnLocaleChanged()
-    {
-        if (text == null) return;
-
-        string newText;
-
-        text.text = Localiser.GetLocalisedString(localisationKey, out newText)
-            ? newText
-            : string.Format("<color=red>{0}</color>", localisationKey);
-    }
+}
 ```
+
+Above we specified the type parameter `TextMeshProUGUI` when inheriting `AbstractLocalisedObject<>`.
+This specifies the type of component that this lcoaliser component will accompany and is used to obtain a reference to it which is accessible through the `Component` property.
+
+You must also specify the resource type using the attribute class `[ResourceType(LocalisedResourceType.Text)]`. This tell us which categories to display when drawing the inspector GUI.
 
 Note: we cannot provide this as part of the package without introducing a dependency on the TextMeshPro assembly, otherwise we would ship this library with this component.
