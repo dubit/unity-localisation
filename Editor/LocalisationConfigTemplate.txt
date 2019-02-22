@@ -23,7 +23,7 @@ namespace Assets.Scripts.Localisation
 					Debug.LogError(string.Format("Localisation value not found: {0}", key));
 				}
 			}
-			catch (System.InvalidCastException e)
+			catch (System.InvalidCastException)
 			{
 				Debug.LogError(string.Format("Localisation key could not be cast to int: {0}", key));
 			}
