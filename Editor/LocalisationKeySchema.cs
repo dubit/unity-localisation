@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DUCK.Localisation.LocalisedObjects;
 using UnityEngine;
 
 namespace DUCK.Localisation.Editor
@@ -16,7 +17,7 @@ namespace DUCK.Localisation.Editor
 		public class LocalisationKeyCategory
 		{
 			public string name = string.Empty;
-			public LocalisedObject.LocalisedResourceType type = LocalisedObject.LocalisedResourceType.Text;
+			public LocalisedResourceType type = LocalisedResourceType.Text;
 			public string[] keys = { };
 
 			public override string ToString()

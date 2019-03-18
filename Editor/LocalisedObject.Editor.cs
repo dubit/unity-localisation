@@ -1,10 +1,11 @@
 ﻿using System;
+using DUCK.Localisation.LocalisedObjects;
 using UnityEditor;
 using UnityEngine;
 
 namespace DUCK.Localisation.Editor
 {
-	[CustomEditor(typeof(LocalisedObject), true)]
+	[CustomEditor(typeof(AbstractLocalisedObject), true)]
 	public class LocalisedObjectEditor : UnityEditor.Editor
 	{
 		private SerializedProperty localisationKey;
@@ -30,8 +31,8 @@ namespace DUCK.Localisation.Editor
 
 		public override void OnInspectorGUI()
 		{
-			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex), 
-				(serializedObject.targetObject as ILocalisedObject).ResourceType, localisationKey, keyName, categoryName);
+			var vec2int = DrawLocalisedObject(initialised, new Vector2Int(selectedKeyIndex, selectedCategoryIndex),
+				(serializedObject.targetObject as AbstractLocalisedObject).ResourceType, localisationKey, keyName, categoryName);
 
 			serializedObject.ApplyModifiedProperties();
 
@@ -41,14 +42,25 @@ namespace DUCK.Localisation.Editor
 			initialised = true;
 		}
 
-		public static Vector2Int DrawLocalisedObject(bool initialised, Vector2Int selectedKeyAndCategory, LocalisedObject.LocalisedResourceType resourceType,
-			SerializedProperty localisationKey, SerializedProperty keyName, SerializedProperty categoryName, bool autosave = false)
+		public static Vector2Int DrawLocalisedObject(
+			bool initialised,
+			Vector2Int selectedKeyAndCategory,
+			LocalisedResourceType resourceType,
+			SerializedProperty localisationKey,
+			SerializedProperty keyName,
+			SerializedProperty categoryName,
+			bool autosave = false)
 		{
 			var currentSchema = LocalisationEditor.CurrentSchema;
 
-			if (currentSchema == null)
+			if (resourceType == LocalisedResourceType.Unknown)
 			{
-				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: Dubit/Localisation",
+				EditorGUILayout.HelpBox("This component doesn't specify a resource type. Please specify one by adding the [ResourceType] attribute to the class",
+					MessageType.Error);
+			}
+			else if (currentSchema == null)
+			{
+				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: DUCK/Localisation",
 					MessageType.Warning);
 			}
 			else
@@ -87,6 +99,8 @@ namespace DUCK.Localisation.Editor
 					}
 				}
 
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Category", GUILayout.MaxWidth(100f));
 				var categoryIndex = selectedKeyAndCategory.y;
 				if (categoryIndex < 0 || categoryIndex >= availableCategories.Length)
 				{
@@ -94,7 +108,10 @@ namespace DUCK.Localisation.Editor
 				}
 				categoryIndex = EditorGUILayout.Popup(categoryIndex, categoryNames);
 				selectedKeyAndCategory.y = categoryIndex;
+				EditorGUILayout.EndHorizontal();
 
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("Key", GUILayout.MaxWidth(100f));
 				var category = currentSchema.categories[availableCategories[categoryIndex]];
 				var locKeyIndex = selectedKeyAndCategory.x;
 				if (locKeyIndex < 0 || locKeyIndex >= category.keys.Length)
@@ -103,6 +120,7 @@ namespace DUCK.Localisation.Editor
 				}
 				locKeyIndex = EditorGUILayout.Popup(locKeyIndex, category.keys);
 				selectedKeyAndCategory.x = locKeyIndex;
+				EditorGUILayout.EndHorizontal();
 
 				var selectedLocKey = category.keys[locKeyIndex];
 				var savedLocKey = keyName.stringValue;

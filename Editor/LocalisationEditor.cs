@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -14,11 +15,9 @@ namespace DUCK.Localisation.Editor
 		/// </summary>
 		public const int KEY_CRC_ENCODING_VERSION = 1;
 
-		// Code generation
-		private const string REPLACE_SUFFIX = ".old";
-		private const string CONFIG_FILENAME = "LocalisationConfig.cs";
-		private const string LOC_CLASS_NAME = "Loc";
-		private const string LOC_DATA_PATH = "Localisation";
+		// Code generation parameters for the Loc bridge class
+		private const string CONFIG_REPLACE_SUFFIX = ".old";
+		private const string CONFIG_LOC_CLASS_NAME = "Loc";
 
 		public static LocalisationKeySchema CurrentSchema { get; private set; }
 
@@ -60,7 +59,8 @@ namespace DUCK.Localisation.Editor
 			if (localSchema == null)
 			{
 				EditorGUILayout.HelpBox(
-					"A key schema is a list of all the localisation keys in the project - generate a new one with the Assets menu and populate it with all the keys you need, or drag the existing asset into the field above.",
+					"A key schema is a list of all the localisation keys in the project - generate a new one using the Assets menu, " +
+					"and populate it with all the keys you need, or drag an existing asset into the field above.",
 					MessageType.Info);
 
 				var schema =
@@ -109,16 +109,16 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.HelpBox(
 				"Click Generate to build a class file which can be referenced application-side to get localisation keys and other data in-game.",
 				MessageType.Info);
-			EditorGUILayout.LabelField("Output filename:", CONFIG_FILENAME);
-			EditorGUILayout.LabelField("Localisation data path:", "Resources/" + LOC_DATA_PATH + "/");
+			EditorGUILayout.LabelField("Output filename:", LocalisationPreferences.CodeGenerationFilePath);
+			EditorGUILayout.LabelField("Localisation data path:", LocalisationPreferences.LocalisationTableFolder + "/");
 
-			EditorGUILayout.LabelField("Template required to generate locale class");
+			EditorGUILayout.LabelField("Template required to generate localisation class");
 			EditorGUILayout.BeginHorizontal();
 			configTemplate =
 				(TextAsset)EditorGUILayout.ObjectField("Config template:", configTemplate, typeof(TextAsset), false);
 
 			EditorGUI.BeginDisabledGroup(configTemplate == null);
-			if (GUILayout.Button("Generate Locale Class"))
+			if (GUILayout.Button("Generate Config Class"))
 			{
 				GenerateLocalisationConfig();
 			}
@@ -149,15 +149,21 @@ namespace DUCK.Localisation.Editor
 			}
 			else
 			{
-				EditorGUILayout.HelpBox(string.Format("Click 'find' to search for localisation table assets in {0}", LOC_DATA_PATH),
+				EditorGUILayout.HelpBox(
+					string.Format(
+						"Click 'find' to search for localisation table assets in {0}",
+						LocalisationPreferences.LocalisationTableFolder),
 					MessageType.Info);
 			}
 		}
 
 		private void FindAllTables()
 		{
-			Localiser.Initialise(LOC_DATA_PATH);
-			tablePaths = Localiser.GetTablePaths();
+			var localisationTables = AssetDatabase.FindAssets($"t:{nameof(LocalisationTable)}")
+				.Select(AssetDatabase.GUIDToAssetPath)
+				.Where(p => !p.Contains("Tests/Data/Test"));
+
+			tablePaths = localisationTables.ToDictionary(Path.GetFileName, v => v);
 
 			if (metaData.Length < tablePaths.Keys.Count)
 			{
@@ -167,7 +173,7 @@ namespace DUCK.Localisation.Editor
 			var i = 0;
 			foreach (var tablePath in tablePaths)
 			{
-				var locTable = Resources.Load<LocalisationTable>(tablePath.Value);
+				var locTable = AssetDatabase.LoadAssetAtPath<LocalisationTable>(tablePath.Value);
 				if (locTable != null)
 				{
 					metaData[i].missingValues = LocalisationTableEditor.FindEmptyValues(locTable, CurrentSchema, true);
@@ -203,7 +209,7 @@ namespace DUCK.Localisation.Editor
 				{
 					EditorGUILayout.BeginHorizontal();
 					tableFoldouts[i] = EditorGUILayout.Foldout(tableFoldouts[i],
-						string.Format("{0}\tResources/{1}.asset", tablePath.Key, tablePath.Value));
+						$"{tablePath.Key}\t{tablePath.Value}");
 					if (metaData[i].HasProblem)
 					{
 						EditorGUILayout.LabelField("✕", errorIconStyle, GUILayout.MaxWidth(40f));
@@ -216,12 +222,11 @@ namespace DUCK.Localisation.Editor
 
 					if (tableFoldouts[i])
 					{
-						tableFoldouts = new bool[tableFoldouts.Length];
-						tableFoldouts[i] = true;
-
 						if (!metaData[i].HasProblem)
 						{
+							EditorGUI.indentLevel++;
 							EditorGUILayout.LabelField("No errors detected.", fineLabelStyle);
+							EditorGUI.indentLevel--;
 							i++;
 							continue;
 						}
@@ -280,11 +285,16 @@ namespace DUCK.Localisation.Editor
 				return;
 			}
 
-			var filePath = string.Format("{0}/{1}", Application.dataPath, CONFIG_FILENAME);
+			var filePath = $"{Application.dataPath}/{LocalisationPreferences.CodeGenerationFilePath}";
+			var directoryPath = Path.GetDirectoryName(filePath);
+			if (!Directory.Exists(directoryPath))
+			{
+				Directory.CreateDirectory(directoryPath);
+			}
 
 			if (File.Exists(filePath))
 			{
-				var renamedPath = filePath + REPLACE_SUFFIX;
+				var renamedPath = filePath + CONFIG_REPLACE_SUFFIX;
 				if (File.Exists(renamedPath))
 				{
 					File.Delete(renamedPath);
@@ -320,9 +330,8 @@ namespace DUCK.Localisation.Editor
 			}
 
 			var outputText = configTemplate.text;
-			outputText = outputText.Replace("{CLASS}", LOC_CLASS_NAME);
+			outputText = outputText.Replace("{CLASS}", CONFIG_LOC_CLASS_NAME);
 			outputText = outputText.Replace("{KEYS}", stringBuilder.ToString());
-			outputText = outputText.Replace("{PATH}", LOC_DATA_PATH);
 			File.WriteAllText(filePath, outputText);
 
 			AssetDatabase.SaveAssets();
@@ -333,19 +342,32 @@ namespace DUCK.Localisation.Editor
 
 		public void GenerateLocalisationTable()
 		{
-			if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+			var relativePath = $"{LocalisationPreferences.LocalisationTableFolder}";
+			var directoryPath = Path.GetDirectoryName($"{Application.dataPath}/{relativePath}");
+			if (!Directory.Exists(directoryPath))
 			{
-				AssetDatabase.CreateFolder("Assets", "Resources");
+				Directory.CreateDirectory(directoryPath);
 			}
 
-			if (!AssetDatabase.IsValidFolder("Assets/Resources/" + LOC_DATA_PATH))
+			var path = $"Assets/{relativePath}";
+			if (!AssetDatabase.IsValidFolder(path))
 			{
-				AssetDatabase.CreateFolder("Assets/Resources", LOC_DATA_PATH);
+				var parts = relativePath.Split('/');
+				var constructedPath = "Assets";
+				foreach (var part in parts)
+				{
+					var lastConstructedPath = constructedPath;
+					constructedPath += "/" + part;
+					if (!AssetDatabase.IsValidFolder(constructedPath))
+					{
+						AssetDatabase.CreateFolder(lastConstructedPath, part);
+					}
+				}
 			}
 
 			var asset = CreateInstance<LocalisationTable>();
-			var path = "Assets/Resources/" + LOC_DATA_PATH + "/New Localisation Table.asset";
-			ProjectWindowUtil.CreateAsset(asset, path);
+			Debug.Log($"Created new localisation file at path: {path}");
+			ProjectWindowUtil.CreateAsset(asset, path + "/New Localisation Table.asset");
 		}
 
 		public static int GetCRC(string category, string key)
