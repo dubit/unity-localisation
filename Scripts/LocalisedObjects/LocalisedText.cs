@@ -12,7 +12,7 @@ namespace DUCK.Localisation.LocalisedObjects
 	{
 		protected override void HandleLocaleChanged(bool translationFound, string localisedString)
 		{
-			Component.text = translationFound ? localisedString : $"<color=red>{localisationKey}</color>";
+			Component.text = translationFound ? localisedString : $"<color=red>{localisedValue.LocalisationKey}</color>";
 		}
 	}
 }

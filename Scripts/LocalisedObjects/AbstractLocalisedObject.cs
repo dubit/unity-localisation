@@ -14,17 +14,8 @@ namespace DUCK.Localisation.LocalisedObjects
 			}
 		}
 
-#if UNITY_EDITOR
-		// Only used by Editor for human-readable display options
-		// When built, all categories and keys are compiled away to CRC int values
 		[SerializeField]
-		protected string keyName;
-		[SerializeField]
-		protected string categoryName;
-#endif
-
-		[SerializeField]
-		protected int localisationKey;
+		protected LocalisedValue localisedValue;
 	}
 
 	/// <summary>
@@ -57,7 +48,7 @@ namespace DUCK.Localisation.LocalisedObjects
 			if (Localiser.Initialised)
 			{
 				var localisedText = "";
-				var foundtranslation = Localiser.GetLocalisedString(localisationKey, out localisedText);
+				var foundtranslation = Localiser.GetLocalisedString(localisedValue.LocalisationKey, out localisedText);
 				HandleLocaleChanged(foundtranslation, localisedText);
 			}
 			else
