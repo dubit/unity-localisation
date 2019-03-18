@@ -111,11 +111,6 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.EndHorizontal();
 
 			serializedObject.ApplyModifiedProperties();
-
-			if (arraySize != categories.arraySize)
-			{
-				LocalisationEditorUtils.RefreshCategories();
-			}
 		}
 
 		private bool DrawCategory(SerializedProperty nameProperty, SerializedProperty keysProperty,

@@ -95,7 +95,6 @@ namespace DUCK.Localisation.Editor
 			if (localSchema != null && CurrentSchema == null)
 			{
 				CurrentSchema = localSchema;
-				LocalisationEditorUtils.RefreshCategories();
 			}
 
 			if (localSchema == null)

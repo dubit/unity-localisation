@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DUCK.Localisation.LocalisedObjects;
 using UnityEditor;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace DUCK.Localisation.Editor
 	public class LocalisedValuePropertyDrawer: PropertyDrawer
 	{
 		private const float LINE_HEIGHT = 18;
+		private const float INDENTATION = 10;
 
 		bool isInitialized = false;
 		Vector2Int selectedKeyAndCategory;
@@ -24,8 +26,6 @@ namespace DUCK.Localisation.Editor
 
 			// Draw label
 			EditorGUI.LabelField(rect, label);
-
-			var resourceType = property.serializedObject.FindProperty("resourceType");
 
 			// Prepare data
 			var currentSchema = LocalisationEditor.CurrentSchema;
@@ -58,31 +58,21 @@ namespace DUCK.Localisation.Editor
 				}
 
 				// CATEGORIES
-				var availableCategories = LocalisationEditorUtils.GetAvailableCategories();
-				var categoryNames = new string[availableCategories.Length];
-				for (var i = 0; i < categoryNames.Length; i++)
-				{
-					if (availableCategories[i] > currentSchema.categories.Length)
-					{
-						categoryNames[i] = "< REMOVED? >";
-					}
-					else
-					{
-						categoryNames[i] = currentSchema.categories[availableCategories[i]].name;
-					}
-				}
-
+				var categories = currentSchema.categories;
+				var categoryNames = categories.Select(c => c.name).ToArray();
 				var categoryIndex = selectedKeyAndCategory.y;
-				if (categoryIndex < 0 || categoryIndex >= categoryNames.Length)
-				{
-					categoryIndex = 0;
-				}
+				categoryIndex = categoryIndex < 0 || categoryIndex >= categoryNames.Length ?
+					0 : selectedKeyAndCategory.y;
 
-				var categoryRect = new Rect(rect) {y = rect.y + LINE_HEIGHT};
+				var categoryRect = new Rect(rect)
+				{
+					x = rect.x + INDENTATION,
+					y = rect.y + LINE_HEIGHT
+				};
 				categoryIndex = EditorGUI.Popup(categoryRect, "Category", categoryIndex, categoryNames);
 				selectedKeyAndCategory.y = categoryIndex;
 
-				var category = currentSchema.categories[availableCategories[categoryIndex]];
+				var category = currentSchema.categories[categoryIndex];
 
 				// KEYS
 				var locKeyIndex = selectedKeyAndCategory.x;
@@ -90,14 +80,22 @@ namespace DUCK.Localisation.Editor
 				{
 					locKeyIndex = 0;
 				}
-				var keysRect = new Rect(rect) {y = rect.y + LINE_HEIGHT + LINE_HEIGHT};
+				var keysRect = new Rect(rect)
+				{
+					x = rect.x + INDENTATION,
+					y = rect.y + LINE_HEIGHT * 2
+				};
 				locKeyIndex = EditorGUI.Popup(keysRect, "Key", locKeyIndex,  category.keys);
 				selectedKeyAndCategory.x = locKeyIndex;
 
 				var selectedLocKey = category.keys[locKeyIndex];
 				var savedLocKey = keyName.stringValue;
 
-				if (savedLocKey != selectedLocKey)
+				var crc = LocalisationEditor.GetCRC(
+					category.name,
+					selectedLocKey);
+
+				if (localisationKey.intValue != crc)
 				{
 					keyName.stringValue = selectedLocKey;
 					categoryName.stringValue = category.name;
