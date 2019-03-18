@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DUCK.Localisation.LocalisedObjects;
 using UnityEditor;
 
@@ -77,11 +78,9 @@ namespace DUCK.Localisation.Editor
 		private static readonly Dictionary<LocalisedResourceType, List<int>> categoriesByResourceType =
 			new Dictionary<LocalisedResourceType, List<int>>();
 
-		public static int[] GetAvailableCategories(LocalisedResourceType resourceType)
+		public static int[] GetAvailableCategories()
 		{
-			return categoriesByResourceType.ContainsKey(resourceType)
-				? categoriesByResourceType[resourceType].ToArray()
-				: new int[] { };
+			return categoriesByResourceType.Values.SelectMany(v => v).ToArray();
 		}
 
 		public static void RefreshCategories()

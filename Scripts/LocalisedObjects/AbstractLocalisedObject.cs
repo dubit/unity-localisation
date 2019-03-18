@@ -1,19 +1,9 @@
-﻿using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DUCK.Localisation.LocalisedObjects
 {
 	public abstract class AbstractLocalisedObject : MonoBehaviour
 	{
-		public LocalisedResourceType ResourceType
-		{
-			get
-			{
-				var resourceTypeAttribute = GetType().GetCustomAttribute<ResourceTypeAttribute>();
-				return resourceTypeAttribute?.ResourceType ?? LocalisedResourceType.Unknown;
-			}
-		}
-
 		[SerializeField]
 		protected LocalisedValue localisedValue;
 	}
