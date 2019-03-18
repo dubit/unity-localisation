@@ -21,5 +21,19 @@ namespace DUCK.Localisation.LocalisedObjects
 		[SerializeField]
 		protected int localisationKey;
 		public int LocalisationKey => localisationKey;
+
+		public string StringValue
+		{
+			get
+			{
+				var localisedText = "";
+				if (Localiser.GetLocalisedString(LocalisationKey, out localisedText))
+				{
+					return localisedText;
+				}
+
+				return $"No translation found! {LocalisationKey}";
+			}
+		}
 	}
 }
