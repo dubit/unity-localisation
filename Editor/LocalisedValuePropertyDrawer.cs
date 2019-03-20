@@ -50,7 +50,7 @@ namespace DUCK.Localisation.Editor
 						new Vector2Int
 						{
 							x = Math.Max(0, keyLookup.keyIndex),
-							y = Math.Max(0, keyLookup.categoryIndex)
+							y = Math.Max(0, keyLookup.categoryIndex),
 						}
 						: Vector2Int.zero;
 
@@ -67,7 +67,8 @@ namespace DUCK.Localisation.Editor
 				var categoryRect = new Rect(rect)
 				{
 					x = rect.x + INDENTATION,
-					y = rect.y + LINE_HEIGHT
+					y = rect.y + LINE_HEIGHT,
+					height = LINE_HEIGHT
 				};
 				categoryIndex = EditorGUI.Popup(categoryRect, "Category", categoryIndex, categoryNames);
 				selectedKeyAndCategory.y = categoryIndex;
@@ -83,7 +84,8 @@ namespace DUCK.Localisation.Editor
 				var keysRect = new Rect(rect)
 				{
 					x = rect.x + INDENTATION,
-					y = rect.y + LINE_HEIGHT * 2
+					y = rect.y + LINE_HEIGHT * 2,
+					height = LINE_HEIGHT
 				};
 				locKeyIndex = EditorGUI.Popup(keysRect, "Key", locKeyIndex,  category.keys);
 				selectedKeyAndCategory.x = locKeyIndex;
