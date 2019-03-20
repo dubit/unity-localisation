@@ -42,7 +42,7 @@ namespace DUCK.Localisation.LocalisedObjects
 			{
 				var localisedText = "";
 				var foundtranslation = Localiser.GetLocalisedString(localisedValue.LocalisationKey, out localisedText);
-				if (foundtranslation)
+				if (foundtranslation && formatParameters != null && formatParameters.Length > 0)
 				{
 					localisedText = string.Format(localisedText, formatParameters);
 				}
@@ -64,12 +64,13 @@ namespace DUCK.Localisation.LocalisedObjects
 			{
 				throw new System.Exception($"No table found that supports the locale {locale}");
 			}
-
 			var value = table.GetString(localisedValue.LocalisationKey);
 
 			Component = GetComponent<TComponent>();
 
-			HandleLocaleChanged(true, string.Format(value, formatParameters));
+			var shouldFormat = formatParameters != null && formatParameters.Length > 0;
+			value = shouldFormat ? string.Format(value, formatParameters) : value;
+			HandleLocaleChanged(true, value);
 		}
 #endif
 	}
