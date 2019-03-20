@@ -6,6 +6,9 @@ namespace DUCK.Localisation.LocalisedObjects
 	{
 		[SerializeField]
 		protected LocalisedValue localisedValue;
+
+		[SerializeField]
+		protected string[] formatParameters;
 	}
 
 	/// <summary>
@@ -39,6 +42,10 @@ namespace DUCK.Localisation.LocalisedObjects
 			{
 				var localisedText = "";
 				var foundtranslation = Localiser.GetLocalisedString(localisedValue.LocalisationKey, out localisedText);
+				if (foundtranslation)
+				{
+					localisedText = string.Format(localisedText, formatParameters);
+				}
 				HandleLocaleChanged(foundtranslation, localisedText);
 			}
 			else
@@ -46,5 +53,24 @@ namespace DUCK.Localisation.LocalisedObjects
 				Debug.LogWarning("Cannot localise, the localiser is not initialised!");
 			}
 		}
+
+#if ODIN_INSPECTOR && UNITY_EDITOR
+		[Sirenix.OdinInspector.Button]
+		private void Test(string locale = "en-GB", string tablesPaths = "")
+		{
+			var localisationTables = Resources.LoadAll<LocalisationTable>(tablesPaths);
+			var table = System.Linq.Enumerable.FirstOrDefault(localisationTables, t => t.SupportedLocales.Contains(locale));
+			if (table == null)
+			{
+				throw new System.Exception($"No table found that supports the locale {locale}");
+			}
+
+			var value = table.GetString(localisedValue.LocalisationKey);
+
+			Component = GetComponent<TComponent>();
+
+			HandleLocaleChanged(true, string.Format(value, formatParameters));
+		}
+#endif
 	}
 }
