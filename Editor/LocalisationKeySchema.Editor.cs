@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -107,6 +111,12 @@ namespace DUCK.Localisation.Editor
 			}
 			EditorGUILayout.EndHorizontal();
 
+			EditorGUILayout.Space();
+			if (GUILayout.Button("Import Schema"))
+			{
+				ImportSchema(schema);
+			}
+
 			serializedObject.ApplyModifiedProperties();
 		}
 
@@ -207,6 +217,107 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.EndVertical();
 
 			return false;
+		}
+
+		private void ImportSchema(LocalisationKeySchema schema)
+		{
+			var filters = new []
+			{
+				"CSV files", "csv",
+				"Text files", "txt",
+				"All files", ""
+			};
+
+			var path = EditorUtility.OpenFilePanelWithFilters("Localisation Schema", Application.dataPath, filters);
+
+			if (string.IsNullOrEmpty(path)) return;
+
+			var newCategories = new List<string>();
+			var newKeys = new Dictionary<string, List<string>>();
+
+			try
+			{
+				var lines = CsvParser.Parse(File.ReadAllText(path));
+				foreach (var line in lines)
+				{
+					var categoryName = line[0];
+					var keyName = line[1];
+
+					if (!newCategories.Contains(categoryName))
+					{
+						newCategories.Add(categoryName);
+					}
+
+					if (!newKeys.ContainsKey(categoryName))
+					{
+						newKeys.Add(categoryName, new List<string>());
+					}
+
+					var keys = newKeys[categoryName];
+
+					if (!keys.Contains(keyName))
+					{
+						keys.Add(keyName);
+					}
+				}
+
+				foreach (var newCategoryName in newCategories)
+				{
+					SerializedProperty category = null;
+					for (var i = 0; i < categories.arraySize; i++)
+					{
+						var existingCategory = categories.GetArrayElementAtIndex(i);
+						if (existingCategory.FindPropertyRelative("name").stringValue == newCategoryName)
+						{
+							category = existingCategory;
+							Debug.Log("Category: " + newCategoryName + " - already exists");
+							break;
+						}
+					}
+
+					if (category == null)
+					{
+						categories.InsertArrayElementAtIndex(categories.arraySize);
+						category = categories.GetArrayElementAtIndex(categories.arraySize - 1);
+						category.FindPropertyRelative("name").stringValue = newCategoryName;
+						category.FindPropertyRelative("keys").ClearArray();
+
+						Debug.Log("Add category: " + newCategoryName);
+					}
+
+					var keys = category.FindPropertyRelative("keys");
+					foreach (var newKeyName in newKeys[newCategoryName])
+					{
+						var keyAlreadyExists = false;
+						for (var i = 0; i < keys.arraySize; i++)
+						{
+							var key = keys.GetArrayElementAtIndex(i);
+							if (key.stringValue == newKeyName)
+							{
+								Debug.Log("Key: " +newCategoryName + " : " + newKeyName + " - already exists");
+								keyAlreadyExists = true;
+								break;
+							}
+						}
+
+						if (!keyAlreadyExists)
+						{
+							keys.InsertArrayElementAtIndex(keys.arraySize);
+							var newKey = keys.GetArrayElementAtIndex(keys.arraySize - 1);
+							newKey.stringValue = newKeyName;
+
+							Debug.Log("Add Key: " + newCategoryName + " : " + newKeyName);
+						}
+					}
+				}
+
+				// Adding category
+
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(string.Format("Could not load from CSV format: {0}", e.Message));
+			}
 		}
 	}
 }

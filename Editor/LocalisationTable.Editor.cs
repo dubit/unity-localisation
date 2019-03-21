@@ -263,17 +263,17 @@ namespace DUCK.Localisation.Editor
 				const char separator = ',';
 
 				var newData = new Dictionary<int, string>();
-				var valueBuilder = new StringBuilder();
 
 				Func<string, string> cleanInput = input => input.Replace("\t", string.Empty);
 
-				var streamReader = new StreamReader(File.OpenRead(path));
-				while (!streamReader.EndOfStream)
+				var lines = CsvParser.Parse(File.ReadAllText(path));
+				foreach (var line in lines)
 				{
-					var line = streamReader.ReadLine();
-					var splits = line.Split(separator);
-					var category = cleanInput(splits[0]);
-					var key = cleanInput(splits[1]);
+					if (line.Count < 3) continue;
+
+					var category = cleanInput(line[0]);
+					var key = cleanInput(line[1]);
+					var value = cleanInput(line[2]);
 
 					var lookup = currentSchema.FindKey(category, key);
 					if (!lookup.IsValid)
@@ -287,30 +287,8 @@ namespace DUCK.Localisation.Editor
 						continue;
 					}
 
-					string thisValue;
-					if (splits.Length == 3)
-					{
-						thisValue = cleanInput(splits[2]);
-					}
-					else
-					{
-						for (var i = 2; i < splits.Length; i++)
-						{
-							valueBuilder.Append(cleanInput(splits[i]));
-							if (i < splits.Length - 1)
-							{
-								valueBuilder.Append(separator);
-							}
-						}
-
-						thisValue = valueBuilder.ToString();
-					}
-
-					thisValue = thisValue.Trim(Convert.ToChar("\""));
-
-					newData.Add(keyCRC, thisValue);
+					newData.Add(keyCRC, value);
 				}
-				streamReader.Close();
 
 				locTable.SetData(newData, emptyValuesOnly);
 				AssetDatabase.SaveAssets();
