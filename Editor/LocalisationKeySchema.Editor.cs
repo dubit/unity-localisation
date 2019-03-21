@@ -47,11 +47,9 @@ namespace DUCK.Localisation.Editor
 				var categoryProperty = categories.GetArrayElementAtIndex(i);
 
 				var nameProperty = categoryProperty.FindPropertyRelative("name");
-				var typeProperty = categoryProperty.FindPropertyRelative("type");
 				var keysProperty = categoryProperty.FindPropertyRelative("keys");
 
-				var labelContent = string.Format("{0} ({1} : {2})", nameProperty.stringValue,
-					typeProperty.enumDisplayNames[typeProperty.enumValueIndex], keysProperty.arraySize.ToString());
+				var labelContent = string.Format("{0} ({1})", nameProperty.stringValue, keysProperty.arraySize.ToString());
 
 				if (!duplicateCategories.ContainsKey(nameProperty.stringValue))
 				{
@@ -68,7 +66,7 @@ namespace DUCK.Localisation.Editor
 				contentToggles[i] = EditorGUILayout.Foldout(contentToggles[i], labelContent);
 				if (contentToggles[i])
 				{
-					if (DrawCategory(nameProperty, keysProperty, typeProperty, i))
+					if (DrawCategory(nameProperty, keysProperty, i))
 					{
 						EditorGUI.indentLevel--;
 						break;
@@ -105,21 +103,14 @@ namespace DUCK.Localisation.Editor
 
 				var newCategory = categories.GetArrayElementAtIndex(categories.arraySize - 1);
 				newCategory.FindPropertyRelative("name").stringValue = "NewCategory";
-				newCategory.FindPropertyRelative("type").enumValueIndex = 0;
 				newCategory.FindPropertyRelative("keys").arraySize = 0;
 			}
 			EditorGUILayout.EndHorizontal();
 
 			serializedObject.ApplyModifiedProperties();
-
-			if (arraySize != categories.arraySize)
-			{
-				LocalisationEditorUtils.RefreshCategories();
-			}
 		}
 
-		private bool DrawCategory(SerializedProperty nameProperty, SerializedProperty keysProperty,
-			SerializedProperty typeProperty, int index)
+		private bool DrawCategory(SerializedProperty nameProperty, SerializedProperty keysProperty, int index)
 		{
 			EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 			EditorGUILayout.BeginHorizontal();
@@ -139,8 +130,6 @@ namespace DUCK.Localisation.Editor
 				return true;
 			}
 			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.PropertyField(typeProperty, new GUIContent("Content type"));
 
 			EditorGUI.indentLevel++;
 
