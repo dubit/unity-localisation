@@ -238,7 +238,7 @@ namespace DUCK.Localisation.Editor
 							wrongKeyEncoding ? errorLabelStyle : okLabelStyle, GUILayout.MaxWidth(160f));
 						if (GUILayout.Button("Select (fix problem)", GUILayout.MaxWidth(160f)))
 						{
-							var assetPath = "Assets/Resources/" + tablePath.Value + ".asset";
+							var assetPath = tablePath.Value;
 							Selection.activeObject = AssetDatabase.LoadAssetAtPath<LocalisationTable>(assetPath);
 						}
 						EditorGUILayout.EndHorizontal();
@@ -251,7 +251,7 @@ namespace DUCK.Localisation.Editor
 							missingValues > 0 ? errorLabelStyle : okLabelStyle, GUILayout.MaxWidth(160f));
 						if (GUILayout.Button("Export missing values", GUILayout.MaxWidth(160f)))
 						{
-							var locTable = Resources.Load<LocalisationTable>(tablePath.Value);
+							var locTable = AssetDatabase.LoadAssetAtPath<LocalisationTable>(tablePath.Value);
 							if (locTable != null)
 							{
 								LocalisationTableEditor.ExportEmptyValues(locTable, CurrentSchema);
