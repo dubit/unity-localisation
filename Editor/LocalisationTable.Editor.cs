@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -83,7 +82,7 @@ namespace DUCK.Localisation.Editor
 		{
 			GUILayout.Label("Locales (languages) supported", EditorStyles.boldLabel);
 			EditorGUI.indentLevel++;
-			LocalisationEditorUtils.DrawLocalesProperty(locales);
+			EditorGUILayout.PropertyField(locales, true);
 			EditorGUI.indentLevel--;
 
 			GUILayout.Label("Save / load", EditorStyles.boldLabel);
@@ -91,7 +90,7 @@ namespace DUCK.Localisation.Editor
 			var currentSchema = LocalisationEditor.CurrentSchema;
 			if (currentSchema == null)
 			{
-				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: Dubit/Localisation",
+				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: Duck/Localisation",
 					MessageType.Warning);
 			}
 			else
@@ -291,6 +290,7 @@ namespace DUCK.Localisation.Editor
 				}
 
 				locTable.SetData(newData, emptyValuesOnly);
+				EditorUtility.SetDirty(locTable);
 				AssetDatabase.SaveAssets();
 
 				Debug.Log(string.Format("Data populated from file: {0} {1}", path,
