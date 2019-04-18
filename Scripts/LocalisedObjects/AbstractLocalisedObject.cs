@@ -51,7 +51,7 @@ namespace DUCK.Localisation.LocalisedObjects
 					}
 					catch (FormatException e)
 					{
-						Debug.LogError($"FormatException thrown by {name}: " + e.Message, this);
+						Debug.LogError($"FormatException thrown by {name}: {e.Message}", this);
 					}
 				}
 				HandleLocaleChanged(foundtranslation, localisedText);
