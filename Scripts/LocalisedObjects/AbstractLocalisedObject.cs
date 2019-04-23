@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DUCK.Localisation.LocalisedObjects
 {
@@ -44,7 +45,14 @@ namespace DUCK.Localisation.LocalisedObjects
 				var foundtranslation = Localiser.GetLocalisedString(localisedValue.LocalisationKey, out localisedText);
 				if (foundtranslation && formatParameters != null && formatParameters.Length > 0)
 				{
-					localisedText = string.Format(localisedText, formatParameters);
+					try
+					{
+						localisedText = string.Format(localisedText, formatParameters);
+					}
+					catch (FormatException e)
+					{
+						Debug.LogError($"FormatException thrown by {name}: {e.Message}", this);
+					}
 				}
 				HandleLocaleChanged(foundtranslation, localisedText);
 			}
