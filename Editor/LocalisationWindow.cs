@@ -7,14 +7,8 @@ using UnityEngine;
 
 namespace DUCK.Localisation.Editor
 {
-	public class LocalisationEditor : EditorWindow
+	public class LocalisationWindow : EditorWindow
 	{
-		/// <summary>
-		/// The 'encoding version' used to generate int hash values from string-based keys in GetCRC. If this changes,
-		/// the value here needs to be updated, as the keys in the localisation tables will no longer be valid.
-		/// </summary>
-		public const int KEY_CRC_ENCODING_VERSION = 1;
-
 		// Code generation parameters for the Loc bridge class
 		private const string CONFIG_REPLACE_SUFFIX = ".old";
 		private const string CONFIG_LOC_CLASS_NAME = "Loc";
@@ -35,13 +29,13 @@ namespace DUCK.Localisation.Editor
 			public int missingValues;
 			public int keyEncodingVersion;
 
-			public bool HasProblem { get { return missingValues > 0 || keyEncodingVersion != KEY_CRC_ENCODING_VERSION; } }
+			public bool HasProblem { get { return missingValues > 0 || keyEncodingVersion != CrcUtils.KEY_CRC_ENCODING_VERSION; } }
 		}
 
 		[MenuItem("DUCK/Localisation")]
 		public static void ShowWindow()
 		{
-			GetWindow(typeof(LocalisationEditor), false, "Localisation");
+			GetWindow(typeof(LocalisationWindow), false, "Localisation");
 		}
 
 		private void OnEnable()
@@ -230,7 +224,7 @@ namespace DUCK.Localisation.Editor
 							continue;
 						}
 
-						var wrongKeyEncoding = metaData[i].keyEncodingVersion != KEY_CRC_ENCODING_VERSION;
+						var wrongKeyEncoding = metaData[i].keyEncodingVersion != CrcUtils.KEY_CRC_ENCODING_VERSION;
 						EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
 						EditorGUI.BeginDisabledGroup(!wrongKeyEncoding);
 						GUILayout.Label(string.Format("Encoding version: {0}", metaData[i].keyEncodingVersion),
@@ -314,7 +308,7 @@ namespace DUCK.Localisation.Editor
 				{
 					var key = category.keys[i];
 
-					stringBuilder.Append("\t\t\t" + key + " = " + GetCRC(category.name, key));
+					stringBuilder.Append("\t\t\t" + key + " = " + CrcUtils.GetCrc(category.name, key));
 					if (i < category.keys.Length - 1)
 					{
 						stringBuilder.AppendLine(",");
@@ -367,23 +361,6 @@ namespace DUCK.Localisation.Editor
 			var asset = CreateInstance<LocalisationTable>();
 			Debug.Log($"Created new localisation file at path: {path}");
 			ProjectWindowUtil.CreateAsset(asset, path + "/New Localisation Table.asset");
-		}
-
-		public static int GetCRC(string category, string key)
-		{
-			return GetCRCWithEncodingVersion(category, key, KEY_CRC_ENCODING_VERSION);
-		}
-
-		public static int GetCRCWithEncodingVersion(string category, string key, int encodingVersion)
-		{
-			switch (encodingVersion)
-			{
-				case 0:
-					return key.GetHashCode();
-				//case 1: Latest - matches KeyCRCEncodingVersion
-				default:
-					return (category + "/" + key).GetHashCode();
-			}
 		}
 	}
 }

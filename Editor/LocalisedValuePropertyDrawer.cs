@@ -28,7 +28,7 @@ namespace DUCK.Localisation.Editor
 			EditorGUI.LabelField(rect, label);
 
 			// Prepare data
-			var currentSchema = LocalisationEditor.CurrentSchema;
+			var currentSchema = LocalisationWindow.CurrentSchema;
 			if (currentSchema == null)
 			{
 				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: DUCK/Localisation",
@@ -93,7 +93,7 @@ namespace DUCK.Localisation.Editor
 				var selectedLocKey = category.keys[locKeyIndex];
 				var savedLocKey = keyName.stringValue;
 
-				var crc = LocalisationEditor.GetCRC(
+				var crc = CrcUtils.GetCrc(
 					category.name,
 					selectedLocKey);
 
@@ -102,7 +102,7 @@ namespace DUCK.Localisation.Editor
 					keyName.stringValue = selectedLocKey;
 					categoryName.stringValue = category.name;
 
-					localisationKey.intValue = LocalisationEditor.GetCRC(
+					localisationKey.intValue = CrcUtils.GetCrc(
 						categoryName.stringValue,
 						keyName.stringValue);
 
