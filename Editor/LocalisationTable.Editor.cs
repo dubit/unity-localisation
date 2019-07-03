@@ -243,9 +243,15 @@ namespace DUCK.Localisation.Editor
 		 * Category,Key,Content
 		 * Category,Key,"Complex, Content"
 		 */
-		private static void LoadFromFile(LocalisationTable locTable, LocalisationKeySchema currentSchema,
-			bool emptyValuesOnly = false)
+		private static void LoadFromFile(
+			LocalisationTable locTable,
+			LocalisationKeySchema currentSchema,
+			bool emptyValuesOnly = false,
+			bool saveAssets = true)
 		{
+			if (locTable == null) throw new ArgumentNullException(nameof(locTable));
+			if (currentSchema == null) throw new ArgumentNullException(nameof(currentSchema));
+
 			var filters = new []
 			{
 				"CSV files", "csv",
@@ -254,8 +260,24 @@ namespace DUCK.Localisation.Editor
 			};
 
 			var path = EditorUtility.OpenFilePanelWithFilters("Localisation table contents", Application.dataPath, filters);
+			LoadFromFile(locTable, currentSchema, path, emptyValuesOnly, saveAssets);
+		}
 
-			if (string.IsNullOrEmpty(path)) return;
+		/*
+		 * FORMAT:
+		 * Category,Key,Content
+		 * Category,Key,"Complex, Content"
+		 */
+		public static void LoadFromFile(
+			LocalisationTable locTable,
+			LocalisationKeySchema currentSchema,
+			string path,
+			bool emptyValuesOnly = false,
+			bool saveAssets = true)
+		{
+			if (locTable == null) throw new ArgumentNullException(nameof(locTable));
+			if (currentSchema == null) throw new ArgumentNullException(nameof(currentSchema));
+			if (path == null) throw new ArgumentNullException(nameof(path));
 
 			try
 			{
