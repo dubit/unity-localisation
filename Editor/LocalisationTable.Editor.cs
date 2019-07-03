@@ -53,7 +53,7 @@ namespace DUCK.Localisation.Editor
 
 				foreach (var key in category.keys)
 				{
-					var locKeyCRC = LocalisationEditor.GetCRC(category.name, key);
+					var locKeyCRC = CrcUtils.GetCrc(category.name, key);
 					var locValue = string.Empty;
 
 					try
@@ -87,7 +87,7 @@ namespace DUCK.Localisation.Editor
 
 			GUILayout.Label("Save / load", EditorStyles.boldLabel);
 			EditorGUI.indentLevel++;
-			var currentSchema = LocalisationEditor.CurrentSchema;
+			var currentSchema = LocalisationWindow.CurrentSchema;
 			if (currentSchema == null)
 			{
 				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: Duck/Localisation",
@@ -154,7 +154,7 @@ namespace DUCK.Localisation.Editor
 			}
 
 			var updateKeyEncoding = (crcEncodingVersion.intValue >= 0 &&
-			                         crcEncodingVersion.intValue != LocalisationEditor.KEY_CRC_ENCODING_VERSION);
+			                         crcEncodingVersion.intValue != CrcUtils.KEY_CRC_ENCODING_VERSION);
 
 			for (var i = 0; i < currentSchema.categories.Length; i++)
 			{
@@ -167,7 +167,7 @@ namespace DUCK.Localisation.Editor
 					for (var j = 0; j < category.keys.Length; j++)
 					{
 						var locKeyCRC =
-							LocalisationEditor.GetCRCWithEncodingVersion(category.name, category.keys[j], crcEncodingVersion.intValue);
+							CrcUtils.GetCrcWithEncodingVersion(category.name, category.keys[j], crcEncodingVersion.intValue);
 
 						if (contentToggles[i])
 						{
@@ -190,7 +190,7 @@ namespace DUCK.Localisation.Editor
 							if (updateKeyEncoding)
 							{
 								keyMap.Remove(locKeyCRC);
-								locKeyCRC = LocalisationEditor.GetCRC(category.name, category.keys[j]);
+								locKeyCRC = CrcUtils.GetCrc(category.name, category.keys[j]);
 								localisationKeys.GetArrayElementAtIndex(currentArrayIndex).intValue = locKeyCRC;
 								keyMap.Add(locKeyCRC, currentArrayIndex);
 							}
@@ -230,7 +230,7 @@ namespace DUCK.Localisation.Editor
 
 			if (updateKeyEncoding)
 			{
-				crcEncodingVersion.intValue = LocalisationEditor.KEY_CRC_ENCODING_VERSION;
+				crcEncodingVersion.intValue = CrcUtils.KEY_CRC_ENCODING_VERSION;
 				Debug.Log(string.Format("Localisation table '{0}' updated key CRC encoding to latest version: {1}",
 					targetTable.name, crcEncodingVersion.intValue));
 			}
@@ -280,7 +280,7 @@ namespace DUCK.Localisation.Editor
 						continue;
 					}
 
-					var keyCRC = LocalisationEditor.GetCRC(category, key);
+					var keyCRC = CrcUtils.GetCrc(category, key);
 					if (newData.ContainsKey(keyCRC))
 					{
 						continue;
@@ -313,7 +313,7 @@ namespace DUCK.Localisation.Editor
 			Func<string, string, string, string> cleanOutput = (csvKey1, csvKey2, csvValue) =>
 				string.Format("{0},{1},\"{2}\"", csvKey1, csvKey2, csvValue);
 
-			if (locTable.CRCEncodingVersion != LocalisationEditor.KEY_CRC_ENCODING_VERSION)
+			if (locTable.CRCEncodingVersion != CrcUtils.KEY_CRC_ENCODING_VERSION)
 			{
 				Debug.LogError(string.Format(
 					"Table encoding version ({0}) does not match current version (1) - please update the table before trying to export anything.",
@@ -334,7 +334,7 @@ namespace DUCK.Localisation.Editor
 				{
 					foreach (var key in category.keys)
 					{
-						var locKeyCRC = LocalisationEditor.GetCRC(category.name, key);
+						var locKeyCRC = CrcUtils.GetCrc(category.name, key);
 						var locValue = string.Empty;
 
 						try
