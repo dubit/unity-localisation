@@ -68,7 +68,8 @@ namespace DUCK.Localisation.Editor
 				{
 					x = rect.x + INDENTATION,
 					y = rect.y + LINE_HEIGHT,
-					height = LINE_HEIGHT
+					height = LINE_HEIGHT,
+					width = rect.width - INDENTATION,
 				};
 				categoryIndex = EditorGUI.Popup(categoryRect, "Category", categoryIndex, categoryNames);
 				selectedKeyAndCategory.y = categoryIndex;
@@ -85,7 +86,8 @@ namespace DUCK.Localisation.Editor
 				{
 					x = rect.x + INDENTATION,
 					y = rect.y + LINE_HEIGHT * 2,
-					height = LINE_HEIGHT
+					height = LINE_HEIGHT,
+					width = rect.width - INDENTATION
 				};
 				locKeyIndex = EditorGUI.Popup(keysRect, "Key", locKeyIndex,  category.keys);
 				selectedKeyAndCategory.x = locKeyIndex;
