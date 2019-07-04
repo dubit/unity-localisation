@@ -102,8 +102,8 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.HelpBox(
 				"Click Generate to build a class file which can be referenced application-side to get localisation keys and other data in-game.",
 				MessageType.Info);
-			EditorGUILayout.LabelField("Output filename:", LocalisationPreferences.CodeGenerationFilePath);
-			EditorGUILayout.LabelField("Localisation data path:", LocalisationPreferences.LocalisationTableFolder + "/");
+			EditorGUILayout.LabelField("Output filename:", LocalisationSettings.Current.CodeGenerationFilePath);
+			EditorGUILayout.LabelField("Localisation data path:", LocalisationSettings.Current.LocalisationTableFolder + "/");
 
 			EditorGUILayout.LabelField("Template required to generate localisation class");
 			EditorGUILayout.BeginHorizontal();
@@ -145,7 +145,7 @@ namespace DUCK.Localisation.Editor
 				EditorGUILayout.HelpBox(
 					string.Format(
 						"Click 'find' to search for localisation table assets in {0}",
-						LocalisationPreferences.LocalisationTableFolder),
+						LocalisationSettings.Current.LocalisationTableFolder),
 					MessageType.Info);
 			}
 		}
@@ -278,7 +278,7 @@ namespace DUCK.Localisation.Editor
 				return;
 			}
 
-			var filePath = $"{Application.dataPath}/{LocalisationPreferences.CodeGenerationFilePath}";
+			var filePath = $"{Application.dataPath}/{LocalisationSettings.Current.CodeGenerationFilePath}";
 			var directoryPath = Path.GetDirectoryName(filePath);
 			if (!Directory.Exists(directoryPath))
 			{
@@ -335,7 +335,7 @@ namespace DUCK.Localisation.Editor
 
 		public void GenerateLocalisationTable()
 		{
-			var relativePath = $"{LocalisationPreferences.LocalisationTableFolder}";
+			var relativePath = $"{LocalisationSettings.Current.LocalisationTableFolder}";
 			var directoryPath = Path.GetDirectoryName($"{Application.dataPath}/{relativePath}");
 			if (!Directory.Exists(directoryPath))
 			{
