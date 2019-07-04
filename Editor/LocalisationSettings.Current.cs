@@ -28,7 +28,7 @@ namespace DUCK.Localisation.Editor
 		public static LocalisationSettings Create()
 		{
 			current = CreateInstance<LocalisationSettings>();
-			AssetDatabase.CreateAsset(current, "Assets/LocalisationSettings.asset");
+			ProjectWindowUtil.CreateAsset(current, "Assets/LocalisationSettings.asset");
 			AssetDatabase.SaveAssets();
 			return current;
 		}
