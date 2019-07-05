@@ -11,5 +11,9 @@ namespace DUCK.Localisation.Editor
 		[SerializeField]
 		private string localisationTableFolder;
 		public string LocalisationTableFolder => localisationTableFolder;
+
+		[SerializeField]
+		private LocalisationKeySchema schema = new LocalisationKeySchema();
+		public LocalisationKeySchema Schema => schema;
 	}
 }

@@ -29,7 +29,7 @@ namespace DUCK.Localisation.Editor
 			EditorGUI.LabelField(rect, label);
 
 			// Prepare data
-			var currentSchema = LocalisationWindow.CurrentSchema;
+			var currentSchema = LocalisationSettings.Current.Schema;
 			if (currentSchema == null)
 			{
 				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: DUCK/Localisation",

@@ -78,7 +78,7 @@ namespace DUCK.Localisation.Editor.Window
 					if (locTable != null)
 					{
 						metaData[i].missingValues =
-							LocalisationTableEditor.FindEmptyValues(locTable, CurrentSchema, true);
+							LocalisationTableEditor.FindEmptyValues(locTable, LocalisationSettings.Current.Schema, true);
 						metaData[i].keyEncodingVersion = locTable.CRCEncodingVersion;
 
 						Resources.UnloadAsset(locTable);
@@ -160,7 +160,7 @@ namespace DUCK.Localisation.Editor.Window
 								var locTable = AssetDatabase.LoadAssetAtPath<LocalisationTable>(tablePath.Value);
 								if (locTable != null)
 								{
-									LocalisationTableEditor.ExportEmptyValues(locTable, CurrentSchema);
+									LocalisationTableEditor.ExportEmptyValues(locTable, LocalisationSettings.Current.Schema);
 									Resources.UnloadAsset(locTable);
 								}
 								else
