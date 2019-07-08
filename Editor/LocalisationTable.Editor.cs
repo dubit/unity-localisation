@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
 using DUCK.Localisation.Editor.Data;
+using DUCK.Localisation.Editor.Window;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,15 +37,11 @@ namespace DUCK.Localisation.Editor
 		{
 			if (locTable == null || currentSchema == null) return;
 
-			var path = EditorUtility.SaveFilePanel(
-				"Save localisation table",
-				Application.dataPath,
-				$"{locTable.name}-0.csv",
-				"csv");
-
-			if (string.IsNullOrEmpty(path)) return;
-
-			Exporter.ExportTableToCsv(path, locTable, currentSchema, true);
+			var path = GuiUtils.SaveCsvFileDialog($"{locTable.name}-0.csv");
+			if (!string.IsNullOrEmpty(path))
+			{
+				Exporter.ExportTableToCsv(path, locTable, currentSchema, true);
+			}
 		}
 
 		public static int FindEmptyValues(LocalisationTable locTable, LocalisationKeySchema currentSchema,
@@ -121,14 +116,12 @@ namespace DUCK.Localisation.Editor
 
 				if (GUILayout.Button("Save to CSV"))
 				{
-					var path = EditorUtility.SaveFilePanel(
-						"Save localisation table",
-						Application.dataPath,
-						$"{targetTable.name}.csv",
-						"csv");
+					var path = GuiUtils.SaveCsvFileDialog($"{targetTable.name}.csv");
+					if (!string.IsNullOrEmpty(path))
+					{
+						Exporter.ExportTableToCsv(path, targetTable, currentSchema, emptyValuesOnly);
+					}
 
-					if (string.IsNullOrEmpty(path)) return;
-					Exporter.ExportTableToCsv(path, targetTable, currentSchema, emptyValuesOnly);
 					return;
 				}
 
@@ -269,15 +262,11 @@ namespace DUCK.Localisation.Editor
 			if (locTable == null) throw new ArgumentNullException(nameof(locTable));
 			if (currentSchema == null) throw new ArgumentNullException(nameof(currentSchema));
 
-			var filters = new []
+			var path = GuiUtils.OpenCsvFileDialog();
+			if (!string.IsNullOrEmpty(path))
 			{
-				"CSV files", "csv",
-				"Text files", "txt",
-				"All files", ""
-			};
-
-			var path = EditorUtility.OpenFilePanelWithFilters("Localisation table contents", Application.dataPath, filters);
-			Importer.ImportFromCsv(path, targetTable, currentSchema, emptyValuesOnly, saveAssets);
+				Importer.ImportFromCsv(path, targetTable, currentSchema, emptyValuesOnly, saveAssets);
+			}
 		}
 	}
 }
