@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using DUCK.Localisation.Editor.Window;
 using DUCK.Localisation.LocalisedObjects;
 using UnityEditor;
 using UnityEngine;
