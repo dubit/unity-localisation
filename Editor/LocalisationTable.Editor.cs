@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using DUCK.Localisation.Editor.Window;
 using UnityEditor;
 using UnityEngine;
 
@@ -88,7 +87,7 @@ namespace DUCK.Localisation.Editor
 
 			GUILayout.Label("Save / load", EditorStyles.boldLabel);
 			EditorGUI.indentLevel++;
-			var currentSchema = LocalisationWindow.CurrentSchema;
+			var currentSchema = LocalisationSettings.Current.Schema;
 			if (currentSchema == null)
 			{
 				EditorGUILayout.HelpBox("Please populate Localisation Key Schema (or create a new one). Menu: Duck/Localisation",

@@ -4,8 +4,6 @@ namespace DUCK.Localisation.Editor.Window
 {
 	public partial class LocalisationWindow : EditorWindow
 	{
-		public static LocalisationKeySchema CurrentSchema { get; private set; }
-
 		private readonly SettingsGui settingsGui = new SettingsGui();
 		private readonly CodeGenerationGui codeGenerationGui = new CodeGenerationGui();
 		private readonly TablesGui tablesGui = new TablesGui();

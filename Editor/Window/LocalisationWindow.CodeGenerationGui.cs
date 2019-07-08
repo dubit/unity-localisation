@@ -46,7 +46,8 @@ namespace DUCK.Localisation.Editor.Window
 				EditorGUI.BeginDisabledGroup(configTemplate == null);
 				if (GUILayout.Button("Generate Config Class"))
 				{
-					LocalisationConfigGenerator.GenerateLocalisationConfig(configTemplate, CurrentSchema);
+					LocalisationConfigGenerator.GenerateLocalisationConfig(
+						configTemplate, LocalisationSettings.Current.Schema);
 				}
 
 				EditorGUI.EndDisabledGroup();
