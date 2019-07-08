@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+using DUCK.Localisation.Editor.Data;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,7 +38,15 @@ namespace DUCK.Localisation.Editor
 		{
 			if (locTable == null || currentSchema == null) return;
 
-			SaveToFile(locTable, currentSchema, true);
+			var path = EditorUtility.SaveFilePanel(
+				"Save localisation table",
+				Application.dataPath,
+				$"{locTable.name}-0.csv",
+				"csv");
+
+			if (string.IsNullOrEmpty(path)) return;
+
+			Exporter.ExportTableToCsv(path, locTable, currentSchema, true);
 		}
 
 		public static int FindEmptyValues(LocalisationTable locTable, LocalisationKeySchema currentSchema,
@@ -111,7 +121,14 @@ namespace DUCK.Localisation.Editor
 
 				if (GUILayout.Button("Save to CSV"))
 				{
-					SaveToFile(target as LocalisationTable, currentSchema, emptyValuesOnly);
+					var path = EditorUtility.SaveFilePanel(
+						"Save localisation table",
+						Application.dataPath,
+						$"{targetTable.name}.csv",
+						"csv");
+
+					if (string.IsNullOrEmpty(path)) return;
+					Exporter.ExportTableToCsv(path, targetTable, currentSchema, emptyValuesOnly);
 					return;
 				}
 
@@ -243,7 +260,7 @@ namespace DUCK.Localisation.Editor
 		 * Category,Key,Content
 		 * Category,Key,"Complex, Content"
 		 */
-		private static void LoadFromFile(
+		private void LoadFromFile(
 			LocalisationTable locTable,
 			LocalisationKeySchema currentSchema,
 			bool emptyValuesOnly = false,
@@ -260,129 +277,7 @@ namespace DUCK.Localisation.Editor
 			};
 
 			var path = EditorUtility.OpenFilePanelWithFilters("Localisation table contents", Application.dataPath, filters);
-			LoadFromFile(locTable, currentSchema, path, emptyValuesOnly, saveAssets);
-		}
-
-		/*
-		 * FORMAT:
-		 * Category,Key,Content
-		 * Category,Key,"Complex, Content"
-		 */
-		public static void LoadFromFile(
-			LocalisationTable locTable,
-			LocalisationKeySchema currentSchema,
-			string path,
-			bool emptyValuesOnly = false,
-			bool saveAssets = true)
-		{
-			if (locTable == null) throw new ArgumentNullException(nameof(locTable));
-			if (currentSchema == null) throw new ArgumentNullException(nameof(currentSchema));
-			if (path == null) throw new ArgumentNullException(nameof(path));
-
-			try
-			{
-				const char separator = ',';
-
-				var newData = new Dictionary<int, string>();
-
-				Func<string, string> cleanInput = input => input.Replace("\t", string.Empty);
-
-				var lines = CsvParser.Parse(File.ReadAllText(path));
-				foreach (var line in lines)
-				{
-					if (line.Count < 3) continue;
-
-					var category = cleanInput(line[0]);
-					var key = cleanInput(line[1]);
-					var value = cleanInput(line[2]);
-
-					var lookup = currentSchema.FindKey(category, key);
-					if (!lookup.IsValid)
-					{
-						continue;
-					}
-
-					var keyCRC = CrcUtils.GetCrc(category, key);
-					if (newData.ContainsKey(keyCRC))
-					{
-						continue;
-					}
-
-					newData.Add(keyCRC, value);
-				}
-
-				locTable.SetData(newData, emptyValuesOnly);
-				EditorUtility.SetDirty(locTable);
-				AssetDatabase.SaveAssets();
-
-				Debug.Log(string.Format("Data populated from file: {0} {1}", path,
-					emptyValuesOnly ? "(empty only)" : string.Empty));
-			}
-			catch (Exception e)
-			{
-				Debug.LogError(string.Format("Could not load from CSV format: {0}", e.Message));
-			}
-		}
-
-		private static void SaveToFile(LocalisationTable locTable, LocalisationKeySchema currentSchema,
-			bool emptyValuesOnly = false)
-		{
-			var path = EditorUtility.SaveFilePanel("Save localisation table", Application.dataPath,
-				string.Format("{0}{1}.csv", locTable.name, emptyValuesOnly ? "-0" : string.Empty), "csv");
-
-			if (string.IsNullOrEmpty(path)) return;
-
-			Func<string, string, string, string> cleanOutput = (csvKey1, csvKey2, csvValue) =>
-				string.Format("{0},{1},\"{2}\"", csvKey1, csvKey2, csvValue);
-
-			if (locTable.CRCEncodingVersion != CrcUtils.KEY_CRC_ENCODING_VERSION)
-			{
-				Debug.LogError(string.Format(
-					"Table encoding version ({0}) does not match current version (1) - please update the table before trying to export anything.",
-					locTable.CRCEncodingVersion));
-				return;
-			}
-
-			try
-			{
-				if (File.Exists(path))
-				{
-					File.Delete(path);
-				}
-
-				var streamWriter = new StreamWriter(File.OpenWrite(path));
-
-				foreach (var category in currentSchema.categories)
-				{
-					foreach (var key in category.keys)
-					{
-						var locKeyCRC = CrcUtils.GetCrc(category.name, key);
-						var locValue = string.Empty;
-
-						try
-						{
-							locValue = locTable.GetString(locKeyCRC);
-						}
-						catch
-						{
-							// ignored
-						}
-
-						if (string.IsNullOrEmpty(locValue) || !emptyValuesOnly)
-						{
-							streamWriter.WriteLine(cleanOutput(category.name, key, locValue));
-						}
-					}
-				}
-
-				streamWriter.Close();
-				Debug.Log(string.Format("Contents of table '{0}' written to: {1} {2}", locTable.name, path,
-					emptyValuesOnly ? "(empty only)" : string.Empty));
-			}
-			catch (Exception e)
-			{
-				Debug.LogError(string.Format("Could not save to CSV: {0}", e.Message));
-			}
+			Importer.ImportFromCsv(path, targetTable, currentSchema, emptyValuesOnly, saveAssets);
 		}
 	}
 }
