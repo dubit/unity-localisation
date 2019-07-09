@@ -1,4 +1,5 @@
 using System.IO;
+using DUCK.Localisation.Editor.Data;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,27 +37,23 @@ namespace DUCK.Localisation.Editor.Window
 
 		private void Import()
 		{
-			var filters = new []
-			{
-				"CSV files", "csv",
-				"Text files", "txt",
-				"All files", ""
-			};
-
-			var csvPath = EditorUtility.OpenFilePanelWithFilters(
-				"Localisation table contents", Application.dataPath, filters);
+			var csvPath = GuiUtils.OpenCsvFileDialog();
 
 			if (string.IsNullOrEmpty(csvPath)) return;
 
 			var table = AssetDatabase.LoadAssetAtPath<LocalisationTable>(tablePath);
-			LocalisationTableEditor.LoadFromFile(table, LocalisationSettings.Current.Schema, csvPath);
+			Importer.ImportFromCsv(csvPath, table, LocalisationSettings.Current.Schema);
 			Resources.UnloadAsset(table);
 		}
 
 		private void Export()
 		{
+			var csvPath = GuiUtils.OpenCsvFileDialog();
+
+			if (string.IsNullOrEmpty(csvPath)) return;
+
 			var table = AssetDatabase.LoadAssetAtPath<LocalisationTable>(tablePath);
-			LocalisationTableEditor.SaveToFile(table, LocalisationSettings.Current.Schema);
+			Exporter.ExportTableToCsv(csvPath, table, LocalisationSettings.Current.Schema);
 			Resources.UnloadAsset(table);
 		}
 

@@ -1,3 +1,4 @@
+using DUCK.Localisation.Editor.Data;
 using UnityEditor;
 using UnityEngine;
 
@@ -35,6 +36,32 @@ namespace DUCK.Localisation.Editor.Window
 					if (GUILayout.Button("Create new LocalisationSettings"))
 					{
 						LocalisationSettings.Create();
+					}
+
+					return;
+				}
+
+				EditorGUILayout.Space();
+
+				if (GUILayout.Button("Import Schema"))
+				{
+					var path = GuiUtils.OpenCsvFileDialog();
+					if (!string.IsNullOrEmpty(path))
+					{
+						Importer.ImportSchema(path, settings);
+
+						Debug.Log("Finished importing to schema");
+					}
+				}
+
+				if (GUILayout.Button("Import All (schema & translations)"))
+				{
+					var path = GuiUtils.OpenFolderPanel();
+					if (!string.IsNullOrEmpty(path))
+					{
+						Importer.ImportAll(path, settings);
+
+						Debug.Log("Finished importing everything!");
 					}
 				}
 			}
