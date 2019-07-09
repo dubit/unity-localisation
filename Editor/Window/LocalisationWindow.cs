@@ -14,6 +14,11 @@ namespace DUCK.Localisation.Editor.Window
 			GetWindow(typeof(LocalisationWindow), false, "Localisation");
 		}
 
+		private void OnEnable()
+		{
+			codeGenerationGui.OnEnable();
+		}
+
 		private void OnGUI()
 		{
 			settingsGui.Draw();
