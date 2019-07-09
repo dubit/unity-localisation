@@ -6,12 +6,11 @@ A library containing classes for adding localisation support to your application
 ## Requirements
 * Unity 2017 or higher
 * .NET 4.X or higher
+* C# 6.0 or higher
 
 ## Features
-* Supports localisation for different media types (Text, Audio, Images).
 * Type safe localisation key/value retrieval.
-* Split translations into categories for easier organisation.
-* Validation to auto detect missing values for different locales.
+* Split translations into categories for easier organisation (via code generation)
 * Easy to use out of the box components: `LocalisedText`, `LocalisedAudio`, `LocalisedImage`
 * Simple API to retrieve localised values by code: `Loc.Get(Category.Key.KeyName);`
 
