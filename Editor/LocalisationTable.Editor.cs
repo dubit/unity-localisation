@@ -246,8 +246,7 @@ namespace DUCK.Localisation.Editor
 		private static void LoadFromFile(
 			LocalisationTable locTable,
 			LocalisationKeySchema currentSchema,
-			bool emptyValuesOnly = false,
-			bool saveAssets = true)
+			bool emptyValuesOnly = false)
 		{
 			if (locTable == null) throw new ArgumentNullException(nameof(locTable));
 			if (currentSchema == null) throw new ArgumentNullException(nameof(currentSchema));
@@ -260,7 +259,7 @@ namespace DUCK.Localisation.Editor
 			};
 
 			var path = EditorUtility.OpenFilePanelWithFilters("Localisation table contents", Application.dataPath, filters);
-			LoadFromFile(locTable, currentSchema, path, emptyValuesOnly, saveAssets);
+			LoadFromFile(locTable, currentSchema, path, emptyValuesOnly);
 		}
 
 		/*
@@ -272,8 +271,7 @@ namespace DUCK.Localisation.Editor
 			LocalisationTable locTable,
 			LocalisationKeySchema currentSchema,
 			string path,
-			bool emptyValuesOnly = false,
-			bool saveAssets = true)
+			bool emptyValuesOnly = false)
 		{
 			if (locTable == null) throw new ArgumentNullException(nameof(locTable));
 			if (currentSchema == null) throw new ArgumentNullException(nameof(currentSchema));
@@ -324,16 +322,16 @@ namespace DUCK.Localisation.Editor
 			}
 		}
 
-		private static void SaveToFile(LocalisationTable locTable, LocalisationKeySchema currentSchema,
+		public static void SaveToFile(LocalisationTable locTable, LocalisationKeySchema currentSchema,
 			bool emptyValuesOnly = false)
 		{
 			var path = EditorUtility.SaveFilePanel("Save localisation table", Application.dataPath,
-				string.Format("{0}{1}.csv", locTable.name, emptyValuesOnly ? "-0" : string.Empty), "csv");
+				$"{locTable.name}{(emptyValuesOnly ? "-0" : string.Empty)}.csv", "csv");
 
 			if (string.IsNullOrEmpty(path)) return;
 
 			Func<string, string, string, string> cleanOutput = (csvKey1, csvKey2, csvValue) =>
-				string.Format("{0},{1},\"{2}\"", csvKey1, csvKey2, csvValue);
+				$"{csvKey1},{csvKey2},\"{csvValue}\"";
 
 			if (locTable.CRCEncodingVersion != CrcUtils.KEY_CRC_ENCODING_VERSION)
 			{
