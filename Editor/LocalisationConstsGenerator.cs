@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DUCK.Localisation.Editor
 {
-	public static class LocalisationConfigGenerator
+	public static class LocalisationConstsGenerator
 	{
 		// Code generation parameters for the Loc bridge class
 		private const string CONFIG_REPLACE_SUFFIX = ".old";

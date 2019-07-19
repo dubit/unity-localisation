@@ -17,32 +17,31 @@ Open the Localisation Window via the toolbar. `DUCK -> Localisation`
 
 **Step 2**
 
-In the localisation window click "Create new empty key schema". 
+In the localisation window click "Create new LocalisationSettgings". 
 
-![Create new schema](./create-new-schema.png)
+![Create new settings](./create-new-settings.png)
 
-This creates a new `LocalisationKeySchema.asset` config file in the currently selected directory. Place this anywhere you like or rename it. **You will only need one of these for your project.**
+This creates a new `LocalisationSettings.asset` config file in root of the project. Move this a suitable location and rename it if you like. **You will only need one of these for your project.**
 
-Think of this schema as a master localisation dictionary for your project. 
-The schema stores all the categories and localisation keys that you will use in your project. Each piece of localised content should have a key in here and belong to a category.
+The settings object is a configuration file for localisation in your project.
+* It defines a code generation file path (for generating an enum with all localisation keys).
+* It defines the path to the folder that will contain your localisation tables.
+* It defines a schema. The schema stores all the categories and localisation keys that you will use in your project. Each piece of localised content should have a key in here and belong to a category.
 
 **Step 3**
 
-Select the newly created LocalisationKeySchema, Add some categories via the inspector. A category is a set of related localisation keys. They are related by the type content (eg DialogueTexts, ButtonTexts, ErrorMessages etc..) but also by the type of media (eg Text, Audio, Image).
+Select the newly created `LocalisationSettings` object, Add some categories via the inspector. A category is a set of related localisation keys. They are related by the type content or area of the game (eg DialogueTexts, ButtonTexts, ErrorMessages, CharacterNames etc..).
 Some Example Categories are shown below:
 * MainMenu
 * OptionsMenu
 * DialogueText
-* DialogueAudio
 * CharacterNames
-* CharacterNamesAudio
 * ItemsNames
 * LevelNames
-* LevelThumbnails
-    
+
 Create a new category
 
-![Create new schema](./create-category.png)
+![Create category](./create-category.png)
 
 Expand the category
 
@@ -57,20 +56,16 @@ Example of populated category "MainMenuText"
 ![Example category](./example-category.png)
 
 ## Generate code
-Once the schema is populated with meaningful categories keys. It's time to generate a little bit of code. The system generates a class containing all categories/keys as enums, whose values are encoded as crc values for faster access. Through this class your code can refer to any localisation key, in a type safe manner. It also allows the localised components to show a dropdown UI to select the keys.
+Once the schema is populated with meaningful categories keys. It's time to generate a little bit of code. The system generates a class containing all categories/keys as enums, whose values are encoded as crc values for faster access. Through this class your code can refer to any localisation key, in a type safe manner.
 
 Any time you change the schema you will need to regenerate this file.
 
-To generate the file open the Localisation window again and drag the KeySchemaAsset into the slot.
+To generate the file, in the Localisation window under "Generate localisation consts", you can click "Generate Consts" (1).
+You can also specify your own template (2), although one is provided. 
 
-![Assign key schema](./assign-key-schema.png)
+It will be created in the file path defined in the settings.
 
-Once this field has been assigned the window will look like this:
-
-![Generate Config Class](./generate-config-class.png)
-
-To generate the config class first you need to assign a template. This is just a text asset. One is provided with this package "LocalisationConfigTemplate" but you may want to use your own to conform with your own coding style. Assign a emplate and then click the button "Generate Config Class" (marked "2" in the image above)
-This will generate the config file and save it to the location specified in the [preferences](./Preferences.md).
+![Generate Consts](./generate-consts.png)
 
 ## Populate Data
 Now we need to populate some localisation tables, so our keys actually have some values against them.
@@ -85,7 +80,7 @@ To create a new table click "Create new"
 
 ![Create new table](./create-new-table.png)
 
-This creates a table in the location specified in [preferences](./Preferences.md).
+This creates a table in the location specified in the settings location.
 
 This table asset represents the entire set of translation data for a set of locales. Name it "English" (for example).
 
@@ -93,9 +88,9 @@ Select the table and then in the inspector there are a few options. Shown below:
 
 ![Table config](./table-config.png).
 
-1) Configure which locales are supported by this table. In many cases this is only a single locale, however it allows multiple so a single set of translations can be used to support multiple regions. In our example the "English" table supports `en-US` & `en-GB`. It could also support any number of english speaking countries, however there isn't anything stopping us from splitting it and having unique tables for American & UK English.
+1) Configure which locales are supported by this table. In many cases this is only a single locale, however it allows multiple so a single set of translations can be used to support multiple regions. In our example the "English" table supports `en-US` & `en-GB`. It could also support any number of english speaking countries, however there isn't anything stopping us from splitting it and having unique tables for American & UK English. Each value in here should be a valid [Culture name](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.name?view=netframework-4.8#property-value).
 
-2) Save & Load options allow us to import data and export data from CSVs. There is also an option "Empty values only" which allows us to generate a CSV showing the keys that are missing. For more info about Import/Export see [Importing & Exporting](./Docs/ImportingAndExporting.md).
+2) Save & Load options allow us to import data and export data from CSVs. There is also an option "Empty values only" which allows us to generate a CSV showing the keys that are missing.
 
 3) Allows us to view & edit the values stored agains the keys, grouped by categories. The options above also allow us to toggle viewing CRC values for each key, and shows us the CRC version used.
 

@@ -6,7 +6,7 @@ namespace DUCK.Localisation.Editor.Window
 {
 	public partial class LocalisationWindow
 	{
-		public class SettingsGui
+		private class SettingsGui
 		{
 			public void Draw()
 			{

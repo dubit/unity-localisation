@@ -5,9 +5,17 @@ namespace DUCK.Localisation.Editor.Window
 {
 	public partial class LocalisationWindow
 	{
-		public class CodeGenerationGui
+		private class CodeGenerationGui
 		{
-			private TextAsset configTemplate;
+			private const string BUILT_IN_CONSTS_TEMPLATE_GUID = "b65180d1b746cf848a0eb57f4490dace";
+
+			private TextAsset constsTemplate;
+
+			public void OnEnable()
+			{
+				constsTemplate = AssetDatabase.LoadAssetAtPath<TextAsset>(
+					AssetDatabase.GUIDToAssetPath(BUILT_IN_CONSTS_TEMPLATE_GUID));
+			}
 
 			public void Draw()
 			{
@@ -28,26 +36,26 @@ namespace DUCK.Localisation.Editor.Window
 					EditorGUILayout.LabelField("Localisation data path:",
 						LocalisationSettings.Current.LocalisationTableFolder + "/");
 
-					DrawConfigTemplateAndGenerateButton();
+					DrawConstsTemplateAndGenerateButton();
 				}
 				EditorGUI.indentLevel--;
 			}
 
-			private void DrawConfigTemplateAndGenerateButton()
+			private void DrawConstsTemplateAndGenerateButton()
 			{
 				EditorGUILayout.Space();
-				EditorGUILayout.LabelField("Template required to generate localisation class");
+				EditorGUILayout.LabelField("Template required to generate localisation consts");
 
 				EditorGUILayout.BeginHorizontal();
-				configTemplate =
-					(TextAsset) EditorGUILayout.ObjectField("Config template:", configTemplate, typeof(TextAsset),
+				constsTemplate =
+					(TextAsset) EditorGUILayout.ObjectField("Consts template:", constsTemplate, typeof(TextAsset),
 						false);
 
-				EditorGUI.BeginDisabledGroup(configTemplate == null);
-				if (GUILayout.Button("Generate Config Class"))
+				EditorGUI.BeginDisabledGroup(constsTemplate == null);
+				if (GUILayout.Button("Generate Consts"))
 				{
-					LocalisationConfigGenerator.GenerateLocalisationConfig(
-						configTemplate, LocalisationSettings.Current.Schema);
+					LocalisationConstsGenerator.GenerateLocalisationConfig(
+						constsTemplate, LocalisationSettings.Current.Schema);
 				}
 
 				EditorGUI.EndDisabledGroup();

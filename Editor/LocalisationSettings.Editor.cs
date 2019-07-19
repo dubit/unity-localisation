@@ -35,7 +35,7 @@ namespace DUCK.Localisation.Editor
 			EditorGUILayout.Space();
 			GUILayout.Label("Schema", EditorStyles.boldLabel);
 			EditorGUILayout.HelpBox(
-				"Define your localisation keys by category. Each category can be for a different type of content (e.g. Text, Image or Audio).",
+				"Define your localisation keys by category.",
 				MessageType.Info);
 
 			var arraySize = categories.arraySize;

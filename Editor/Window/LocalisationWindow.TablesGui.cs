@@ -7,7 +7,7 @@ namespace DUCK.Localisation.Editor.Window
 {
 	public partial class LocalisationWindow
 	{
-		public class TablesGui
+		private class TablesGui
 		{
 			private List<TableDrawer> tableDrawers;
 
