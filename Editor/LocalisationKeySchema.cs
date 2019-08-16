@@ -24,7 +24,7 @@ namespace DUCK.Localisation.Editor
 		}
 
 		[SerializeField]
-		public LocalisationKeyCategory[] categories;
+		public LocalisationKeyCategory[] categories = new LocalisationKeyCategory[0];
 
 		public struct KeySchemaLookup
 		{
