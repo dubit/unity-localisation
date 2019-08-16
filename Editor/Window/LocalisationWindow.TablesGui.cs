@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -54,6 +55,18 @@ namespace DUCK.Localisation.Editor.Window
 
 			private void CreateNewTable()
 			{
+				var directory = $"Assets/{LocalisationSettings.Current.LocalisationTableFolder}";
+
+				if (!AssetDatabase.IsValidFolder(directory))
+				{
+					throw new Exception($"The folder {directory} does not exist");
+				}
+
+				var filePath = $"{directory}/NewTable.asset";
+				var table = CreateInstance<LocalisationTable>();
+
+				AssetDatabase.CreateAsset(table, filePath);
+				AssetDatabase.SaveAssets();
 			}
 		}
 	}
