@@ -1,30 +1,15 @@
-﻿using System.Reflection;
+﻿using System;
 using UnityEngine;
 
 namespace DUCK.Localisation.LocalisedObjects
 {
 	public abstract class AbstractLocalisedObject : MonoBehaviour
 	{
-		public LocalisedResourceType ResourceType
-		{
-			get
-			{
-				var resourceTypeAttribute = GetType().GetCustomAttribute<ResourceTypeAttribute>();
-				return resourceTypeAttribute?.ResourceType ?? LocalisedResourceType.Unknown;
-			}
-		}
-
-#if UNITY_EDITOR
-		// Only used by Editor for human-readable display options
-		// When built, all categories and keys are compiled away to CRC int values
 		[SerializeField]
-		protected string keyName;
-		[SerializeField]
-		protected string categoryName;
-#endif
+		protected LocalisedValue localisedValue;
 
 		[SerializeField]
-		protected int localisationKey;
+		protected string[] formatParameters;
 	}
 
 	/// <summary>
@@ -57,7 +42,18 @@ namespace DUCK.Localisation.LocalisedObjects
 			if (Localiser.Initialised)
 			{
 				var localisedText = "";
-				var foundtranslation = Localiser.GetLocalisedString(localisationKey, out localisedText);
+				var foundtranslation = Localiser.GetLocalisedString(localisedValue.LocalisationKey, out localisedText);
+				if (foundtranslation && formatParameters != null && formatParameters.Length > 0)
+				{
+					try
+					{
+						localisedText = string.Format(localisedText, formatParameters);
+					}
+					catch (FormatException e)
+					{
+						Debug.LogError($"FormatException thrown by {name}: {e.Message}", this);
+					}
+				}
 				HandleLocaleChanged(foundtranslation, localisedText);
 			}
 			else
@@ -65,5 +61,25 @@ namespace DUCK.Localisation.LocalisedObjects
 				Debug.LogWarning("Cannot localise, the localiser is not initialised!");
 			}
 		}
+
+#if ODIN_INSPECTOR && UNITY_EDITOR
+		[Sirenix.OdinInspector.Button]
+		private void Test(string locale = "en-GB", string tablesPaths = "")
+		{
+			var localisationTables = Resources.LoadAll<LocalisationTable>(tablesPaths);
+			var table = System.Linq.Enumerable.FirstOrDefault(localisationTables, t => t.SupportedLocales.Contains(locale));
+			if (table == null)
+			{
+				throw new System.Exception($"No table found that supports the locale {locale}");
+			}
+			var value = table.GetString(localisedValue.LocalisationKey);
+
+			Component = GetComponent<TComponent>();
+
+			var shouldFormat = formatParameters != null && formatParameters.Length > 0;
+			value = shouldFormat ? string.Format(value, formatParameters) : value;
+			HandleLocaleChanged(true, value);
+		}
+#endif
 	}
 }

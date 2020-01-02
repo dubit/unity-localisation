@@ -16,20 +16,6 @@ namespace DUCK.Localisation
 		public static string DefaultCulture { get; private set; } = "en-US";
 
 		/// <summary>
-		/// List of CultureInfos representing the languages supported by the localiser
-		/// </summary>
-		public static readonly CultureInfo[] SupportedLocales =
-		{
-			new CultureInfo("en-GB"),
-			new CultureInfo("en-US"),
-			new CultureInfo("fr"),
-			new CultureInfo("it"),
-			new CultureInfo("de"),
-			new CultureInfo("es"),
-			new CultureInfo("pt-BR")
-		};
-
-		/// <summary>
 		/// The current locale, i.e. the language the application is currently localised to
 		/// </summary>
 		public static CultureInfo CurrentLocale { get; private set; }
@@ -118,7 +104,7 @@ namespace DUCK.Localisation
 		/// </summary>
 		public static bool OverrideDefaultCulture(string culture)
 		{
-			if (SupportedLocales.All(c => c.Name != culture) || NameToCultureInfo(culture).Name != culture)
+			if (NameToCultureInfo(culture).Name != culture)
 			{
 				Debug.LogWarning("Invalid default culture name: " + culture);
 				return false;

@@ -1,29 +1,41 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
 namespace DUCK.Localisation.Editor
 {
-	[CustomEditor(typeof(LocalisationKeySchema))]
-	public class LocalisationKeySchemaEditor : UnityEditor.Editor
+	[CustomEditor(typeof(LocalisationSettings))]
+	public class LocalisationSettingsEditor : UnityEditor.Editor
 	{
+		private SerializedProperty codeGenerationFilePathProperty;
+		private SerializedProperty localisationTableFolderProperty;
+		private SerializedProperty schemaProperty;
 		private SerializedProperty categories;
 
-		private bool[] contentToggles = new bool[10];
-
+		private bool[] contentToggles = new bool[0];
 		private readonly Dictionary<string, int> duplicateCategories = new Dictionary<string, int>();
 		private readonly Dictionary<string, int> duplicateKeys = new Dictionary<string, int>();
 
 		private void OnEnable()
 		{
-			categories = serializedObject.FindProperty("categories");
+			codeGenerationFilePathProperty = serializedObject.FindProperty("codeGenerationFilePath");
+			localisationTableFolderProperty = serializedObject.FindProperty("localisationTableFolder");
+			schemaProperty = serializedObject.FindProperty("schema");
+			categories = schemaProperty.FindPropertyRelative("categories");
 		}
 
 		public override void OnInspectorGUI()
 		{
+			GUILayout.Label("Paths", EditorStyles.boldLabel);
+
+			EditorGUILayout.PropertyField(codeGenerationFilePathProperty);
+			EditorGUILayout.PropertyField(localisationTableFolderProperty);
+
+			EditorGUILayout.Space();
+			GUILayout.Label("Schema", EditorStyles.boldLabel);
 			EditorGUILayout.HelpBox(
-				"Define your localisation keys by category. Each category can be for a different type of content (e.g. Text, Image or Audio).",
+				"Define your localisation keys by category.",
 				MessageType.Info);
 
 			var arraySize = categories.arraySize;
@@ -33,9 +45,10 @@ namespace DUCK.Localisation.Editor
 			}
 
 			duplicateCategories.Clear();
+
 			var blankNames = false;
 
-			var schema = target as LocalisationKeySchema;
+			var schema = (target as LocalisationSettings).Schema;
 			for (var i = 0; i < arraySize; i++)
 			{
 				if (schema != null && schema.categories[i] == null)
@@ -47,11 +60,9 @@ namespace DUCK.Localisation.Editor
 				var categoryProperty = categories.GetArrayElementAtIndex(i);
 
 				var nameProperty = categoryProperty.FindPropertyRelative("name");
-				var typeProperty = categoryProperty.FindPropertyRelative("type");
 				var keysProperty = categoryProperty.FindPropertyRelative("keys");
 
-				var labelContent = string.Format("{0} ({1} : {2})", nameProperty.stringValue,
-					typeProperty.enumDisplayNames[typeProperty.enumValueIndex], keysProperty.arraySize.ToString());
+				var labelContent = $"{nameProperty.stringValue} ({keysProperty.arraySize.ToString()})";
 
 				if (!duplicateCategories.ContainsKey(nameProperty.stringValue))
 				{
@@ -68,7 +79,7 @@ namespace DUCK.Localisation.Editor
 				contentToggles[i] = EditorGUILayout.Foldout(contentToggles[i], labelContent);
 				if (contentToggles[i])
 				{
-					if (DrawCategory(nameProperty, keysProperty, typeProperty, i))
+					if (DrawCategory(nameProperty, keysProperty, i))
 					{
 						EditorGUI.indentLevel--;
 						break;
@@ -105,21 +116,14 @@ namespace DUCK.Localisation.Editor
 
 				var newCategory = categories.GetArrayElementAtIndex(categories.arraySize - 1);
 				newCategory.FindPropertyRelative("name").stringValue = "NewCategory";
-				newCategory.FindPropertyRelative("type").enumValueIndex = 0;
 				newCategory.FindPropertyRelative("keys").arraySize = 0;
 			}
 			EditorGUILayout.EndHorizontal();
 
 			serializedObject.ApplyModifiedProperties();
-
-			if (arraySize != categories.arraySize)
-			{
-				LocalisationEditorUtils.RefreshCategories();
-			}
 		}
 
-		private bool DrawCategory(SerializedProperty nameProperty, SerializedProperty keysProperty,
-			SerializedProperty typeProperty, int index)
+		private bool DrawCategory(SerializedProperty nameProperty, SerializedProperty keysProperty, int index)
 		{
 			EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 			EditorGUILayout.BeginHorizontal();
@@ -139,8 +143,6 @@ namespace DUCK.Localisation.Editor
 				return true;
 			}
 			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.PropertyField(typeProperty, new GUIContent("Content type"));
 
 			EditorGUI.indentLevel++;
 

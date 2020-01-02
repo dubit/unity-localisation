@@ -12,6 +12,7 @@ namespace DUCK.Localisation
 	{
 		[SerializeField]
 		private string[] locales = {};
+		public ICollection<string> SupportedLocales => locales;
 
 		[SerializeField]
 		private int crcEncodingVersion;
@@ -21,11 +22,6 @@ namespace DUCK.Localisation
 
 		[SerializeField]
 		private List<string> values = new List<string>();
-
-		/// <summary>
-		/// The locales this table supports (e.g. en-GB, en-US)
-		/// </summary>
-		public ICollection<string> SupportedLocales { get { return locales; } }
 
 		/// <summary>
 		/// The version of CRC encoding which was used to make this table.

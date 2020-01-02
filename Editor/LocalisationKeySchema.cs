@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DUCK.Localisation.LocalisedObjects;
 using UnityEngine;
 
 namespace DUCK.Localisation.Editor
@@ -9,15 +8,13 @@ namespace DUCK.Localisation.Editor
 	/// Key schema: the master-list of all localisation keys in the game, sorted by category, and what content type they refer to.
 	/// This is used in generating the LocalisationConfig for application-side, and driving most of the related Editor UI.
 	/// </summary>
-	[CreateAssetMenu(fileName = "LocalisationKeySchema", menuName = "Localisation/Key Schema")]
 	[Serializable]
-	public class LocalisationKeySchema : ScriptableObject, ISerializationCallbackReceiver
+	public class LocalisationKeySchema : ISerializationCallbackReceiver
 	{
 		[Serializable]
 		public class LocalisationKeyCategory
 		{
 			public string name = string.Empty;
-			public LocalisedResourceType type = LocalisedResourceType.Text;
 			public string[] keys = { };
 
 			public override string ToString()
@@ -27,7 +24,7 @@ namespace DUCK.Localisation.Editor
 		}
 
 		[SerializeField]
-		public LocalisationKeyCategory[] categories;
+		public LocalisationKeyCategory[] categories = new LocalisationKeyCategory[0];
 
 		public struct KeySchemaLookup
 		{

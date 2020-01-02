@@ -7,7 +7,6 @@ namespace DUCK.Localisation.LocalisedObjects
 	/// Automatically updates an Image's sprite to a different file path specified in the localisation table for the current locale
 	/// </summary>
 	[RequireComponent(typeof(Image))]
-	[ResourceType(LocalisedResourceType.Image)]
 	public class LocalisedImage : AbstractLocalisedObject<Image>
 	{
 		protected override void HandleLocaleChanged(bool translationFound, string localisedString)
