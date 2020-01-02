@@ -5,11 +5,11 @@ namespace DUCK.Localisation.Editor
 	public partial class LocalisationSettings : ScriptableObject
 	{
 		[SerializeField]
-		private string codeGenerationFilePath = "Assets/Scripts/Localisation/LocalisationConsts.cs";
+		private string codeGenerationFilePath = "Scripts/Localisation/LocalisationConsts.cs";
 		public string CodeGenerationFilePath => codeGenerationFilePath;
 
 		[SerializeField]
-		private string localisationTableFolder = "Assets/Resources/Localisation";
+		private string localisationTableFolder = "Resources/Localisation";
 		public string LocalisationTableFolder => localisationTableFolder;
 
 		[SerializeField]
